@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("sales") // "admin" | "sales"
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Couch {
+  id          String   @id @default(uuid())
+  title       String
+  style       String   // classic_modular, u_shape, l_shape, sectional, sofa, loveseat, other
+  color       String
+  fabricType  String
+  length      Float?
+  width       Float?
+  height      Float?
+  notes       String?
+  buyPrice    Float?
+  sellPrice   Float?
+  status      String   @default("available") // available, sold, pending
+  featured    Boolean  @default(false)
+  images      CouchImage[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CouchImage {
+  id       String @id @default(uuid())
+  url      String
+  alt      String @default("")
+  order    Int    @default(0)
+  couchId  String
+  couch    Couch  @relation(fields: [couchId], references: [id], onDelete: Cascade)
+}
+
+model CustomerInquiry {
+  id             String   @id @default(uuid())
+  name           String
+  email          String
+  phone          String?
+  preferredStyle String?  // classic_modular, u_shape, l_shape, sectional, sofa, loveseat, any
+  preferredColor String?
+  hasSleeper     Boolean  @default(false)
+  hasReclining   Boolean  @default(false)
+  budgetMin      Float?
+  budgetMax      Float?
+  message        String?
+  status         String   @default("new") // new, contacted, converted, closed
+  source         String?  // marketing link ref
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model BuyRequest {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  phone       String?
+  brand       String?
+  style       String?
+  color       String?
+  condition   String?  // excellent, good, fair, poor
+  age         String?
+  askingPrice Float?
+  description String?
+  images      String?  // JSON array of image URLs
+  status      String   @default("new") // new, reviewing, accepted, declined
+  source      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MarketingLink {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  destination String   @default("/inventory")
+  platform    String?  // facebook, instagram, craigslist, tiktok, other
+  campaign    String?
+  clicks      Int      @default(0)
+  leads       Int      @default(0)
+  sales       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Sale {
+  id          String   @id @default(uuid())
+  couchId     String?
+  couchTitle  String
+  sellPrice   Float
+  buyPrice    Float?
+  paymentMethod String // cash, venmo, cashapp
+  soldBy      String?
+  customerName String?
+  notes       String?
+  source      String?
+  createdAt   DateTime @default(now())
+}
