@@ -11,36 +11,42 @@ export function CouchCard({ couch }: { couch: CouchWithImage }) {
   return (
     <Link
       href={`/inventory/${couch.id}`}
-      className="group block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition"
+      className="group block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
     >
-      <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+      <div className="aspect-[4/3] bg-gray-50 relative overflow-hidden">
         {image ? (
           <img
             src={image.url}
             alt={image.alt || couch.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <div className="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gradient-to-br from-gray-50 to-gray-100">
+            <svg className="w-14 h-14 mb-2" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+              <path d="M20 9V6a2 2 0 00-2-2H6a2 2 0 00-2 2v3a3 3 0 00-3 3v4h2v2h2v-2h14v2h2v-2h2v-4a3 3 0 00-3-3zM6 6h12v3.17A3 3 0 0016 12H8a3 3 0 00-2-2.83V6zM3 12a1 1 0 011-1h1a1 1 0 011 1v2H3v-2zm18 2h-2v-2a1 1 0 011-1h1a1 1 0 011 1v2z" />
             </svg>
+            <span className="text-xs text-gray-400">Photo coming soon</span>
           </div>
         )}
         {couch.sellPrice && (
-          <span className="absolute top-2 right-2 bg-brand-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+          <span className="absolute top-3 right-3 bg-brand-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-md">
             ${couch.sellPrice.toLocaleString()}
+          </span>
+        )}
+        {!couch.sellPrice && (
+          <span className="absolute top-3 right-3 bg-ranch-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-md">
+            Contact for Price
           </span>
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-lg mb-1 group-hover:text-brand-600 transition">
+        <h3 className="font-semibold text-lg mb-2 group-hover:text-brand-600 transition">
           {couch.title}
         </h3>
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-          <span className="bg-gray-100 px-2 py-1 rounded">{styleLabel}</span>
-          <span className="bg-gray-100 px-2 py-1 rounded">{couch.color}</span>
-          <span className="bg-gray-100 px-2 py-1 rounded">{couch.fabricType}</span>
+        <div className="flex flex-wrap gap-1.5 text-xs">
+          <span className="bg-ranch-50 text-ranch-700 px-2.5 py-1 rounded-full font-medium">{styleLabel}</span>
+          <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{couch.color}</span>
+          <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{couch.fabricType}</span>
         </div>
       </div>
     </Link>

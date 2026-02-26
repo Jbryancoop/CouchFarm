@@ -11,13 +11,20 @@ export default async function InquiryPage({
   const params = await searchParams;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-      <h1 className="text-3xl font-bold mb-2">Find Your Perfect Couch</h1>
-      <p className="text-gray-600 mb-8">
-        Tell us what you&apos;re looking for and we&apos;ll reach out when we have a match.
-        We source quality couches daily and love helping people find the right fit.
-      </p>
-      <InquiryForm couchId={params.couch} ref_source={params.ref} />
+    <div>
+      {/* Page header */}
+      <section className="bg-gradient-to-br from-ranch-800 to-ranch-700 text-white py-14">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">Find Your Perfect Couch</h1>
+          <p className="text-ranch-200">
+            Tell us what you&apos;re looking for and we&apos;ll reach out when we have a match.
+          </p>
+        </div>
+      </section>
+
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
+        <InquiryForm couchId={params.couch} ref_source={params.ref} />
+      </div>
     </div>
   );
 }

@@ -48,6 +48,7 @@ export const conditions = [
 ] as const;
 
 export const paymentMethods = [
+  { value: "credit_card", label: "Credit Card" },
   { value: "cash", label: "Cash" },
   { value: "venmo", label: "Venmo" },
   { value: "cashapp", label: "Cash App" },

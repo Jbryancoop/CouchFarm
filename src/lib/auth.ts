@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { v4 as uuid } from "uuid";
 
 const SESSION_COOKIE = "session_token";
-const sessions = new Map<string, { userId: string; expiresAt: number }>();
+const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export async function login(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } });
@@ -14,8 +14,11 @@ export async function login(email: string, password: string) {
   if (!valid) return null;
 
   const token = uuid();
-  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-  sessions.set(token, { userId: user.id, expiresAt });
+  const expiresAt = new Date(Date.now() + SESSION_MAX_AGE);
+
+  await prisma.session.create({
+    data: { token, userId: user.id, expiresAt },
+  });
 
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
@@ -23,7 +26,7 @@ export async function login(email: string, password: string) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: SESSION_MAX_AGE / 1000,
   });
 
   return { id: user.id, email: user.email, name: user.name, role: user.role };
@@ -33,7 +36,7 @@ export async function logout() {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (token) {
-    sessions.delete(token);
+    await prisma.session.deleteMany({ where: { token } });
     cookieStore.delete(SESSION_COOKIE);
   }
 }
@@ -43,19 +46,22 @@ export async function getSession() {
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return null;
 
-  const session = sessions.get(token);
-  if (!session || session.expiresAt < Date.now()) {
-    if (session) sessions.delete(token);
+  const session = await prisma.session.findUnique({
+    where: { token },
+    include: {
+      user: {
+        select: { id: true, email: true, name: true, role: true, active: true },
+      },
+    },
+  });
+
+  if (!session || session.expiresAt < new Date()) {
+    if (session) await prisma.session.delete({ where: { id: session.id } });
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    select: { id: true, email: true, name: true, role: true, active: true },
-  });
-
-  if (!user || !user.active) return null;
-  return user;
+  if (!session.user.active) return null;
+  return session.user;
 }
 
 export async function requireAuth(role?: "admin" | "sales") {
