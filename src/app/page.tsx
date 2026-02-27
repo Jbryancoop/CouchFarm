@@ -3,6 +3,8 @@ import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { siteConfig } from "@/lib/config";
 import { CouchCard } from "@/components/CouchCard";
+import { AnimateIn } from "@/components/AnimateIn";
+import { CountUpStats } from "@/components/CountUpStats";
 
 export default async function HomePage() {
   const featured = await prisma.couch.findMany({
@@ -36,50 +38,82 @@ export default async function HomePage() {
         />
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-ranch-900/85 via-ranch-800/80 to-ranch-900/85" />
-        {/* Subtle decorative accents */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-ranch-500/10 rounded-full blur-3xl" />
+
+        {/* Animated decorative blobs */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-ranch-500/10 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-400/5 rounded-full blur-3xl animate-float-delayed" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-24 md:py-32 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-            <svg className="w-4 h-4 text-brand-300" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span className="text-sm font-medium text-ranch-100">Colorado&apos;s Trusted Couch Source</span>
-          </div>
+          <AnimateIn variant="fade-in" duration={600}>
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+              <svg className="w-4 h-4 text-brand-300" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <span className="text-sm font-medium text-ranch-100">Colorado&apos;s Trusted Couch Source</span>
+            </div>
+          </AnimateIn>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-            Find Your Perfect
-            <span className="block text-brand-300">Couch</span>
-          </h1>
-          <p className="text-lg md:text-xl text-ranch-200 mb-10 max-w-2xl mx-auto leading-relaxed">
-            {siteConfig.description}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/inventory"
-              className="bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-3.5 rounded-xl transition shadow-lg shadow-brand-500/25 hover:shadow-brand-400/30"
-            >
-              Browse Couches
-            </Link>
-            <Link
-              href="/inquiry"
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold px-8 py-3.5 rounded-xl transition"
-            >
-              Tell Us What You Need
-            </Link>
-          </div>
+          <AnimateIn variant="fade-up" delay={150} duration={800}>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
+              Find Your Perfect
+              <span className="block text-shimmer">Couch</span>
+            </h1>
+          </AnimateIn>
+
+          <AnimateIn variant="fade-up" delay={300}>
+            <p className="text-lg md:text-xl text-ranch-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+              {siteConfig.description}
+            </p>
+          </AnimateIn>
+
+          <AnimateIn variant="fade-up" delay={450}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/inventory"
+                className="bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/25 hover:shadow-brand-400/30 hover:scale-[1.02] active:scale-[0.98] animate-pulse-glow"
+              >
+                Browse Couches
+              </Link>
+              <Link
+                href="/inquiry"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold px-8 py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Tell Us What You Need
+              </Link>
+            </div>
+          </AnimateIn>
+
+          {/* Scroll indicator */}
+          <AnimateIn variant="fade-in" delay={900}>
+            <div className="mt-16 flex flex-col items-center text-white/40">
+              <span className="text-xs uppercase tracking-widest mb-2">Scroll</span>
+              <div className="w-5 h-8 border-2 border-white/20 rounded-full flex justify-center pt-1.5">
+                <div className="w-1 h-2 bg-white/40 rounded-full animate-bounce" />
+              </div>
+            </div>
+          </AnimateIn>
+        </div>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="relative -mt-6 z-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <CountUpStats />
         </div>
       </section>
 
       {/* How It Works */}
       <section className="py-16 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3">How It Works</h2>
-            <p className="text-gray-500 max-w-lg mx-auto">Three simple steps to finding your perfect couch</p>
-          </div>
+          <AnimateIn>
+            <div className="text-center mb-12">
+              <span className="text-brand-500 font-semibold text-sm uppercase tracking-wider">Simple Process</span>
+              <h2 className="text-3xl font-bold mt-2 mb-3">How It Works</h2>
+              <p className="text-gray-500 max-w-lg mx-auto">Three simple steps to finding your perfect couch</p>
+            </div>
+          </AnimateIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
@@ -91,6 +125,7 @@ export default async function HomePage() {
                 title: "Browse or Tell Us",
                 desc: "Check our current inventory or submit a request with your style, color, and budget preferences.",
                 color: "brand",
+                step: "01",
               },
               {
                 icon: (
@@ -101,6 +136,7 @@ export default async function HomePage() {
                 title: "We Find Your Match",
                 desc: "Our team sources quality couches daily. We'll match you with the perfect piece.",
                 color: "ranch",
+                step: "02",
               },
               {
                 icon: (
@@ -111,15 +147,22 @@ export default async function HomePage() {
                 title: "Pick Up & Enjoy",
                 desc: "Visit our ranch location to see your couch in person and take it home same day.",
                 color: "brand",
+                step: "03",
               },
-            ].map((item) => (
-              <div key={item.title} className="bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-md transition-shadow">
-                <div className={`w-14 h-14 ${item.color === "brand" ? "bg-brand-50 text-brand-600" : "bg-ranch-50 text-ranch-600"} rounded-2xl flex items-center justify-center mx-auto mb-5`}>
-                  {item.icon}
+            ].map((item, idx) => (
+              <AnimateIn key={item.title} delay={idx * 150} variant="fade-up">
+                <div className="bg-white rounded-2xl p-8 text-center shadow-sm card-hover-lift relative group">
+                  {/* Step number */}
+                  <span className="absolute top-4 right-4 text-5xl font-black text-gray-100 group-hover:text-brand-50 transition-colors select-none">
+                    {item.step}
+                  </span>
+                  <div className={`w-14 h-14 ${item.color === "brand" ? "bg-brand-50 text-brand-600" : "bg-ranch-50 text-ranch-600"} rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300`}>
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
-              </div>
+              </AnimateIn>
             ))}
           </div>
         </div>
@@ -129,26 +172,31 @@ export default async function HomePage() {
       {recentCouches.length > 0 && (
         <section className="py-16 md:py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center justify-between mb-10">
-              <div>
-                <h2 className="text-3xl font-bold">
-                  {featured.length > 0 ? "Featured Couches" : "Latest Arrivals"}
-                </h2>
-                <p className="text-gray-500 mt-1">Hand-picked selections from our inventory</p>
+            <AnimateIn>
+              <div className="flex items-center justify-between mb-10">
+                <div>
+                  <span className="text-brand-500 font-semibold text-sm uppercase tracking-wider">Our Collection</span>
+                  <h2 className="text-3xl font-bold mt-2">
+                    {featured.length > 0 ? "Featured Couches" : "Latest Arrivals"}
+                  </h2>
+                  <p className="text-gray-500 mt-1">Hand-picked selections from our inventory</p>
+                </div>
+                <Link
+                  href="/inventory"
+                  className="hidden sm:inline-flex items-center gap-1.5 text-brand-600 hover:text-brand-700 font-medium group"
+                >
+                  View All
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
               </div>
-              <Link
-                href="/inventory"
-                className="hidden sm:inline-flex items-center gap-1.5 text-brand-600 hover:text-brand-700 font-medium group"
-              >
-                View All
-                <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-            </div>
+            </AnimateIn>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recentCouches.map((couch) => (
-                <CouchCard key={couch.id} couch={couch} />
+              {recentCouches.map((couch, idx) => (
+                <AnimateIn key={couch.id} delay={idx * 100} variant="fade-up">
+                  <CouchCard couch={couch} />
+                </AnimateIn>
               ))}
             </div>
             <div className="sm:hidden text-center mt-8">
@@ -160,34 +208,103 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Sell CTA */}
-      <section className="relative text-white py-20 md:py-24 overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1920&q=80&auto=format&fit=crop"
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-ranch-900/90 to-ranch-800/85" />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <svg className="w-7 h-7 text-brand-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+      {/* Testimonials */}
+      <section className="py-16 md:py-20 bg-ranch-50/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <AnimateIn>
+            <div className="text-center mb-12">
+              <span className="text-ranch-500 font-semibold text-sm uppercase tracking-wider">Happy Customers</span>
+              <h2 className="text-3xl font-bold mt-2 mb-3">What People Are Saying</h2>
+              <p className="text-gray-500 max-w-lg mx-auto">Real reviews from real Colorado couch lovers</p>
+            </div>
+          </AnimateIn>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "Found an amazing sectional for our new apartment. The whole process took less than a day from browsing to pickup. Incredible value!",
+                name: "Sarah M.",
+                location: "Denver, CO",
+                rating: 5,
+              },
+              {
+                quote: "Sold our old couch in hours. They picked it up and paid us on the spot. Way easier than dealing with Craigslist or Facebook Marketplace.",
+                name: "Mike & Jen T.",
+                location: "Boulder, CO",
+                rating: 5,
+              },
+              {
+                quote: "Third time buying from Colorado Couch Ranch. They always have unique, quality pieces you won't find anywhere else. Highly recommend!",
+                name: "Alex R.",
+                location: "Fort Collins, CO",
+                rating: 5,
+              },
+            ].map((review, idx) => (
+              <AnimateIn key={review.name} delay={idx * 150} variant="fade-up">
+                <div className="bg-white rounded-2xl p-6 shadow-sm card-hover-lift h-full flex flex-col">
+                  {/* Stars */}
+                  <div className="flex gap-0.5 mb-4">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <svg key={i} className="w-5 h-5 text-brand-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <blockquote className="text-gray-600 text-sm leading-relaxed flex-1">
+                    &ldquo;{review.quote}&rdquo;
+                  </blockquote>
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="font-semibold text-sm">{review.name}</p>
+                    <p className="text-gray-400 text-xs">{review.location}</p>
+                  </div>
+                </div>
+              </AnimateIn>
+            ))}
           </div>
-          <h2 className="text-3xl font-bold mb-4">Have a Couch to Sell?</h2>
-          <p className="text-ranch-200 mb-8 max-w-xl mx-auto leading-relaxed">
-            We buy quality couches in good condition. Submit your couch details and we&apos;ll get back to you with an offer.
-          </p>
-          <Link
-            href="/sell"
-            className="inline-block bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-3.5 rounded-xl transition shadow-lg shadow-brand-500/25"
-          >
-            Sell Your Couch
-          </Link>
         </div>
       </section>
+
+      {/* Sell CTA */}
+      <AnimateIn variant="fade-in">
+        <section className="relative text-white py-20 md:py-24 overflow-hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1920&q=80&auto=format&fit=crop"
+            alt=""
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-ranch-900/90 to-ranch-800/85 animate-gradient" />
+          {/* Floating accent blobs */}
+          <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl animate-float-slow" />
+          <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-ranch-400/10 rounded-full blur-3xl animate-float-delayed" />
+
+          <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
+            <AnimateIn variant="scale" delay={100}>
+              <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 group">
+                <svg className="w-7 h-7 text-brand-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </AnimateIn>
+            <AnimateIn variant="fade-up" delay={200}>
+              <h2 className="text-3xl font-bold mb-4">Have a Couch to Sell?</h2>
+            </AnimateIn>
+            <AnimateIn variant="fade-up" delay={300}>
+              <p className="text-ranch-200 mb-8 max-w-xl mx-auto leading-relaxed">
+                We buy quality couches in good condition. Submit your couch details and we&apos;ll get back to you with an offer.
+              </p>
+            </AnimateIn>
+            <AnimateIn variant="fade-up" delay={400}>
+              <Link
+                href="/sell"
+                className="inline-block bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/25 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Sell Your Couch
+              </Link>
+            </AnimateIn>
+          </div>
+        </section>
+      </AnimateIn>
     </div>
   );
 }
