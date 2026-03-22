@@ -1,70 +1,110 @@
 import Link from "next/link";
+import Image from "next/image";
 import { siteConfig } from "@/lib/config";
-import { LogoMark } from "@/components/Logo";
 
 export function Footer() {
   return (
-    <footer className="bg-ranch-900 text-gray-300 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <footer
+      style={{
+        background: "var(--ccf-navy-dark)",
+        color: "var(--ccf-white)",
+        marginTop: "auto",
+      }}
+    >
+      <div className="nb-container" style={{ padding: "3.5rem var(--ccf-gutter)" }}>
+        <div className="nb-grid-3">
+          {/* Brand column */}
           <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <LogoMark className="w-9 h-9" />
-              <h3 className="text-white font-bold text-lg">{siteConfig.name}</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", marginBottom: "1rem" }}>
+              <Image
+                src="/brand/cow-circle.png"
+                alt="Colorado Couch Farm"
+                width={56}
+                height={56}
+                style={{ width: "3.25rem", height: "3.25rem", objectFit: "contain" }}
+              />
+              <span style={{
+                fontFamily: "var(--ccf-font-display)",
+                fontWeight: 800,
+                fontStyle: "italic",
+                fontSize: "1.125rem",
+              }}>
+                {siteConfig.name}
+              </span>
             </div>
-            <p className="text-sm text-gray-400 leading-relaxed">{siteConfig.tagline}</p>
+            <p style={{ fontSize: "0.875rem", opacity: 0.6, lineHeight: 1.6 }}>{siteConfig.tagline}</p>
+            {siteConfig.phone && (
+              <p style={{ fontSize: "0.875rem", marginTop: "0.75rem" }}>
+                <a href={`tel:${siteConfig.phone}`} style={{ color: "var(--ccf-cyan)", textDecoration: "none", fontWeight: 600 }}>
+                  {siteConfig.phone}
+                </a>
+              </p>
+            )}
             {siteConfig.email && (
-              <p className="text-sm mt-3">
-                <a href={`mailto:${siteConfig.email}`} className="text-brand-300 hover:text-brand-200 transition">
+              <p style={{ fontSize: "0.875rem", marginTop: "0.25rem" }}>
+                <a href={`mailto:${siteConfig.email}`} style={{ color: "var(--ccf-cyan)", textDecoration: "none", fontWeight: 600 }}>
                   {siteConfig.email}
                 </a>
               </p>
             )}
           </div>
+
+          {/* Quick Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Quick Links</h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="/inventory" className="hover:text-white hover:translate-x-1 transition-all inline-block">
-                  Browse Couches
-                </Link>
-              </li>
-              <li>
-                <Link href="/inquiry" className="hover:text-white hover:translate-x-1 transition-all inline-block">
-                  Find My Couch
-                </Link>
-              </li>
-              <li>
-                <Link href="/sell" className="hover:text-white hover:translate-x-1 transition-all inline-block">
-                  Sell Your Couch
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:text-white hover:translate-x-1 transition-all inline-block">
-                  About Us
-                </Link>
-              </li>
+            <h4 className="nb-label" style={{ marginBottom: "1rem", color: "var(--ccf-cyan)" }}>Quick Links</h4>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+              {[
+                { href: "/inventory", label: "Browse Couches" },
+                { href: "/inquiry", label: "Find My Couch" },
+                { href: "/sell", label: "Sell Your Couch" },
+                { href: "/about", label: "About Us" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="nb-footer-link">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
+
+          {/* Policy box */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Policy</h4>
-            <div className="bg-ranch-800/50 rounded-lg p-4">
-              <p className="text-sm leading-relaxed text-gray-400">
+            <h4 className="nb-label" style={{ marginBottom: "1rem", color: "var(--ccf-cyan)" }}>Policy</h4>
+            <div
+              style={{
+                border: "1px solid rgba(13, 213, 255, 0.2)",
+                borderRadius: "var(--ccf-radius-sm)",
+                padding: "1.25rem",
+              }}
+            >
+              <p style={{ fontSize: "0.875rem", lineHeight: 1.6, opacity: 0.6 }}>
                 All sales are final. No returns or exchanges. We accept Cash, Venmo, Cash App, and Credit Card.
               </p>
               <Link
                 href="/policies"
-                className="inline-flex items-center gap-1 text-sm text-brand-300 hover:text-brand-200 transition mt-3"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  fontSize: "0.875rem",
+                  color: "var(--ccf-cyan)",
+                  textDecoration: "none",
+                  fontWeight: 700,
+                  marginTop: "0.75rem",
+                }}
               >
                 View Full Terms &amp; Policies
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <svg style={{ width: "0.875rem", height: "0.875rem" }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                 </svg>
               </Link>
             </div>
           </div>
         </div>
-        <div className="border-t border-white/10 mt-10 pt-6 text-center text-xs text-gray-500">
+
+        <hr style={{ border: "none", borderTop: "1px solid rgba(13, 213, 255, 0.15)", margin: "2.5rem 0 1.5rem" }} />
+        <div style={{ textAlign: "center", fontSize: "0.75rem", opacity: 0.4 }}>
           &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
         </div>
       </div>

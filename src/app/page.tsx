@@ -25,142 +25,315 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative text-white overflow-hidden">
-        {/* Background image */}
-        <Image
-          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1920&q=80&auto=format&fit=crop"
-          alt=""
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-ranch-900/85 via-ranch-800/80 to-ranch-900/85" />
+      {/* ── Hero ── */}
+      <section
+        style={{
+          background: "linear-gradient(135deg, var(--ccf-navy) 0%, var(--ccf-navy-dark) 50%, #001F4D 100%)",
+          position: "relative",
+          overflow: "hidden",
+          paddingBottom: "5rem",
+        }}
+      >
+        {/* Decorative background elements */}
+        <div style={{
+          position: "absolute",
+          top: "-20%",
+          right: "-10%",
+          width: "600px",
+          height: "600px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(13, 213, 255, 0.12) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute",
+          bottom: "-30%",
+          left: "-15%",
+          width: "500px",
+          height: "500px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(254, 229, 107, 0.08) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
 
-        {/* Animated decorative blobs */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-ranch-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-400/5 rounded-full blur-3xl animate-float-delayed" />
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-24 md:py-32 text-center">
-          {/* Badge */}
-          <AnimateIn variant="fade-in" duration={600}>
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-              <svg className="w-4 h-4 text-brand-300" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <span className="text-sm font-medium text-ranch-100">Colorado&apos;s Trusted Couch Source</span>
+        <div className="nb-container" style={{ padding: "4rem var(--ccf-gutter) 0" }}>
+          {/* Social proof badge */}
+          <AnimateIn variant="fade-in" duration={400}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "2.5rem" }}>
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontSize: "0.875rem",
+                  padding: "0.5rem 1.25rem",
+                  background: "rgba(254, 229, 107, 0.15)",
+                  color: "var(--ccf-sunny)",
+                  borderRadius: "var(--ccf-radius-pill)",
+                  fontFamily: "var(--ccf-font-display)",
+                  fontWeight: 600,
+                  border: "1px solid rgba(254, 229, 107, 0.25)",
+                }}
+              >
+                <span style={{ display: "flex", gap: "2px" }}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <svg key={i} className="nb-star" viewBox="0 0 20 20" fill="currentColor" style={{ width: "1rem", height: "1rem" }}>
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </span>
+                4.9/5 based on 400+ Reviews
+              </span>
             </div>
           </AnimateIn>
 
-          <AnimateIn variant="fade-up" delay={150} duration={800}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-              Find Your Perfect
-              <span className="block text-shimmer">Couch</span>
-            </h1>
-          </AnimateIn>
+          {/* Two-column grid */}
+          <div className="nb-grid-2" style={{ alignItems: "center", gap: "3rem" }}>
+            {/* Left — headline + CTA */}
+            <div>
+              <AnimateIn variant="fade-up" delay={100}>
+                <h1
+                  style={{
+                    fontFamily: "var(--ccf-font-display)",
+                    fontWeight: 900,
+                    fontStyle: "italic",
+                    fontSize: "clamp(2.25rem, 5vw, 3.5rem)",
+                    lineHeight: 1.05,
+                    color: "var(--ccf-white)",
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  Beautiful Couches.{" "}
+                  <span style={{ color: "var(--ccf-cyan)" }}>Actually Affordable.</span>
+                  <br />
+                  <span style={{ color: "var(--ccf-sunny)" }}>Delivered in 24hrs.</span>
+                </h1>
+              </AnimateIn>
 
-          <AnimateIn variant="fade-up" delay={300}>
-            <p className="text-lg md:text-xl text-ranch-200 mb-10 max-w-2xl mx-auto leading-relaxed">
-              {siteConfig.description}
-            </p>
-          </AnimateIn>
+              <AnimateIn variant="fade-up" delay={200}>
+                <p style={{
+                  fontSize: "1.125rem",
+                  color: "rgba(255, 255, 255, 0.7)",
+                  lineHeight: 1.7,
+                  marginBottom: "2rem",
+                  maxWidth: "32rem",
+                  fontWeight: 400,
+                }}>
+                  Skip the big-box markup. We source quality couches daily and pass the savings to you.
+                  No games, no pressure, no &ldquo;suggested retail price.&rdquo;
+                </p>
+              </AnimateIn>
 
-          <AnimateIn variant="fade-up" delay={450}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/inventory"
-                className="bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/25 hover:shadow-brand-400/30 hover:scale-[1.02] active:scale-[0.98] animate-pulse-glow"
-              >
-                Browse Couches
-              </Link>
-              <Link
-                href="/inquiry"
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold px-8 py-3.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                Tell Us What You Need
-              </Link>
+              <AnimateIn variant="fade-up" delay={300}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                  <Link href="/inventory" className="nb-btn nb-btn--cyan">
+                    Browse our Selection
+                  </Link>
+                  <Link
+                    href="/inquiry"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "0.875rem 2rem",
+                      fontFamily: "var(--ccf-font-display)",
+                      fontWeight: 700,
+                      fontSize: "0.9375rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderRadius: "var(--ccf-radius-pill)",
+                      border: "2px solid rgba(255,255,255,0.3)",
+                      color: "var(--ccf-white)",
+                      textDecoration: "none",
+                      transition: "all 0.3s ease",
+                      background: "transparent",
+                    }}
+                  >
+                    Tell Us What You Need
+                  </Link>
+                </div>
+              </AnimateIn>
+
+              <AnimateIn variant="fade-up" delay={400}>
+                <p style={{
+                  fontSize: "0.875rem",
+                  color: "rgba(255,255,255,0.45)",
+                  fontStyle: "italic",
+                  marginTop: "1.5rem",
+                }}>
+                  No commitment. No spam. Just couches.
+                </p>
+              </AnimateIn>
             </div>
-          </AnimateIn>
 
-          {/* Scroll indicator */}
-          <AnimateIn variant="fade-in" delay={900}>
-            <div className="mt-16 flex flex-col items-center text-white/40">
-              <span className="text-xs uppercase tracking-widest mb-2">Scroll</span>
-              <div className="w-5 h-8 border-2 border-white/20 rounded-full flex justify-center pt-1.5">
-                <div className="w-1 h-2 bg-white/40 rounded-full animate-bounce" />
+            {/* Right — brand image / mascot showcase */}
+            <AnimateIn variant="fade-up" delay={200}>
+              <div
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {/* Glowing background circle */}
+                <div style={{
+                  position: "absolute",
+                  width: "85%",
+                  aspectRatio: "1",
+                  borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(13, 213, 255, 0.2) 0%, transparent 65%)",
+                  animation: "pulse-glow 4s ease-in-out infinite",
+                }} />
+                <Image
+                  src="/brand/wordmark-cow.png"
+                  alt="Colorado Couch Farm — Highland Cow Mascot"
+                  width={500}
+                  height={500}
+                  style={{
+                    width: "100%",
+                    maxWidth: "420px",
+                    height: "auto",
+                    position: "relative",
+                    zIndex: 1,
+                    filter: "drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3))",
+                    animation: "float 6s ease-in-out infinite",
+                  }}
+                  priority
+                />
               </div>
-            </div>
-          </AnimateIn>
+            </AnimateIn>
+          </div>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="relative -mt-6 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      {/* ── Stats Bar (overlapping hero) ── */}
+      <section style={{ position: "relative", marginTop: "-2.5rem", zIndex: 10 }}>
+        <div className="nb-container" style={{ maxWidth: "48rem", padding: "0 var(--ccf-gutter)" }}>
           <CountUpStats />
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-16 md:py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      {/* ── How It Works ── */}
+      <section style={{ padding: "5rem 0 4rem" }}>
+        <div className="nb-container" style={{ padding: "0 var(--ccf-gutter)" }}>
           <AnimateIn>
-            <div className="text-center mb-12">
-              <span className="text-brand-500 font-semibold text-sm uppercase tracking-wider">Simple Process</span>
-              <h2 className="text-3xl font-bold mt-2 mb-3">How It Works</h2>
-              <p className="text-gray-500 max-w-lg mx-auto">Three simple steps to finding your perfect couch</p>
+            <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+              <span style={{
+                fontFamily: "var(--ccf-font-display)",
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.15em",
+                color: "var(--ccf-cyan-dark)",
+              }}>
+                Simple Process
+              </span>
+              <h2
+                style={{
+                  fontFamily: "var(--ccf-font-display)",
+                  fontWeight: 800,
+                  fontStyle: "italic",
+                  fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                  lineHeight: 1.1,
+                  color: "var(--ccf-navy)",
+                  marginTop: "0.5rem",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                How It Works
+              </h2>
+              <p style={{ color: "var(--ccf-gray)", maxWidth: "28rem", margin: "0 auto", fontSize: "1.0625rem" }}>
+                Three simple steps to finding your perfect couch
+              </p>
             </div>
           </AnimateIn>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <div className="nb-grid-3">
             {[
               {
+                step: "01",
+                title: "Browse or Tell Us",
+                desc: "Check our current inventory or submit a request with your style, color, and budget preferences.",
                 icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <svg style={{ width: "1.5rem", height: "1.5rem" }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                   </svg>
                 ),
-                title: "Browse or Tell Us",
-                desc: "Check our current inventory or submit a request with your style, color, and budget preferences.",
-                color: "brand",
-                step: "01",
               },
               {
-                icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-                  </svg>
-                ),
+                step: "02",
                 title: "We Find Your Match",
                 desc: "Our team sources quality couches daily. We'll match you with the perfect piece.",
-                color: "ranch",
-                step: "02",
+                icon: (
+                  <svg style={{ width: "1.5rem", height: "1.5rem" }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ),
               },
               {
+                step: "03",
+                title: "Pick Up & Enjoy",
+                desc: "Visit our location to see your couch in person and take it home same day.",
                 icon: (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <svg style={{ width: "1.5rem", height: "1.5rem" }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
                   </svg>
                 ),
-                title: "Pick Up & Enjoy",
-                desc: "Visit our ranch location to see your couch in person and take it home same day.",
-                color: "brand",
-                step: "03",
               },
             ].map((item, idx) => (
-              <AnimateIn key={item.title} delay={idx * 150} variant="fade-up">
-                <div className="bg-white rounded-2xl p-8 text-center shadow-sm card-hover-lift relative group">
-                  {/* Step number */}
-                  <span className="absolute top-4 right-4 text-5xl font-black text-gray-100 group-hover:text-brand-50 transition-colors select-none">
-                    {item.step}
-                  </span>
-                  <div className={`w-14 h-14 ${item.color === "brand" ? "bg-brand-50 text-brand-600" : "bg-ranch-50 text-ranch-600"} rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-300`}>
+              <AnimateIn key={item.title} delay={idx * 120} variant="fade-up">
+                <div
+                  style={{
+                    padding: "2rem",
+                    textAlign: "center",
+                    position: "relative",
+                    background: "var(--ccf-white)",
+                    borderRadius: "var(--ccf-radius)",
+                    boxShadow: "var(--ccf-shadow)",
+                    border: "var(--ccf-border)",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  <div style={{
+                    width: "3.5rem",
+                    height: "3.5rem",
+                    borderRadius: "50%",
+                    background: "var(--ccf-cyan-bg)",
+                    color: "var(--ccf-navy)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1rem",
+                    fontSize: "1.25rem",
+                    fontFamily: "var(--ccf-font-display)",
+                    fontWeight: 800,
+                    border: "2px solid var(--ccf-cyan)",
+                  }}>
                     {item.icon}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                  <div style={{
+                    fontFamily: "var(--ccf-font-display)",
+                    fontWeight: 800,
+                    fontSize: "0.75rem",
+                    color: "var(--ccf-cyan-dark)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    marginBottom: "0.5rem",
+                  }}>
+                    Step {item.step}
+                  </div>
+                  <h3 style={{
+                    fontFamily: "var(--ccf-font-display)",
+                    fontWeight: 700,
+                    fontSize: "1.125rem",
+                    marginBottom: "0.5rem",
+                    color: "var(--ccf-navy)",
+                  }}>
+                    {item.title}
+                  </h3>
+                  <p style={{ color: "var(--ccf-gray)", fontSize: "0.9rem", lineHeight: 1.6 }}>
+                    {item.desc}
+                  </p>
                 </div>
               </AnimateIn>
             ))}
@@ -168,39 +341,77 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured / Recent Inventory */}
+      {/* ── Marquee Banner ── */}
+      <div className="nb-marquee">
+        <div className="nb-marquee-inner">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <span key={i}>
+              <span style={{ padding: "0 2rem" }}>Quality Couches</span>
+              <span style={{ color: "var(--ccf-navy-dark)", opacity: 0.5 }}>&bull;</span>
+              <span style={{ padding: "0 2rem" }}>Same-Day Pickup</span>
+              <span style={{ color: "var(--ccf-navy-dark)", opacity: 0.5 }}>&bull;</span>
+              <span style={{ padding: "0 2rem" }}>No Pressure</span>
+              <span style={{ color: "var(--ccf-navy-dark)", opacity: 0.5 }}>&bull;</span>
+              <span style={{ padding: "0 2rem" }}>Actually Affordable</span>
+              <span style={{ color: "var(--ccf-navy-dark)", opacity: 0.5 }}>&bull;</span>
+              <span style={{ padding: "0 2rem" }}>100% Inspected</span>
+              <span style={{ color: "var(--ccf-navy-dark)", opacity: 0.5 }}>&bull;</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Featured / Recent Inventory ── */}
       {recentCouches.length > 0 && (
-        <section className="py-16 md:py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <section style={{ background: "var(--ccf-white)", padding: "4rem 0" }}>
+          <div className="nb-container" style={{ padding: "0 var(--ccf-gutter)" }}>
             <AnimateIn>
-              <div className="flex items-center justify-between mb-10">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2.5rem", flexWrap: "wrap", gap: "1rem" }}>
                 <div>
-                  <span className="text-brand-500 font-semibold text-sm uppercase tracking-wider">Our Collection</span>
-                  <h2 className="text-3xl font-bold mt-2">
+                  <span style={{
+                    fontFamily: "var(--ccf-font-display)",
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.15em",
+                    color: "var(--ccf-cyan-dark)",
+                  }}>
+                    Our Collection
+                  </span>
+                  <h2 style={{
+                    fontFamily: "var(--ccf-font-display)",
+                    fontWeight: 800,
+                    fontStyle: "italic",
+                    fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                    lineHeight: 1.1,
+                    color: "var(--ccf-navy)",
+                    marginTop: "0.5rem",
+                  }}>
                     {featured.length > 0 ? "Featured Couches" : "Latest Arrivals"}
                   </h2>
-                  <p className="text-gray-500 mt-1">Hand-picked selections from our inventory</p>
+                  <p style={{ color: "var(--ccf-gray)", marginTop: "0.25rem" }}>
+                    Hand-picked selections from our inventory
+                  </p>
                 </div>
                 <Link
                   href="/inventory"
-                  className="hidden sm:inline-flex items-center gap-1.5 text-brand-600 hover:text-brand-700 font-medium group"
+                  className="nb-btn nb-btn--secondary nb-btn--small nb-desktop-only"
                 >
-                  View All
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
+                  View All &rarr;
                 </Link>
               </div>
             </AnimateIn>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <div className="nb-grid-3">
               {recentCouches.map((couch, idx) => (
-                <AnimateIn key={couch.id} delay={idx * 100} variant="fade-up">
+                <AnimateIn key={couch.id} delay={idx * 80} variant="fade-up">
                   <CouchCard couch={couch} />
                 </AnimateIn>
               ))}
             </div>
-            <div className="sm:hidden text-center mt-8">
-              <Link href="/inventory" className="text-brand-600 hover:text-brand-700 font-medium">
+
+            <div className="nb-mobile-only" style={{ textAlign: "center", marginTop: "2rem" }}>
+              <Link href="/inventory" className="nb-btn nb-btn--secondary nb-btn--small">
                 View All Couches &rarr;
               </Link>
             </div>
@@ -208,53 +419,99 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Testimonials */}
-      <section className="py-16 md:py-20 bg-ranch-50/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      {/* ── Testimonials ── */}
+      <section style={{ background: "var(--ccf-chalk)", padding: "5rem 0" }}>
+        <div className="nb-container" style={{ padding: "0 var(--ccf-gutter)" }}>
           <AnimateIn>
-            <div className="text-center mb-12">
-              <span className="text-ranch-500 font-semibold text-sm uppercase tracking-wider">Happy Customers</span>
-              <h2 className="text-3xl font-bold mt-2 mb-3">What People Are Saying</h2>
-              <p className="text-gray-500 max-w-lg mx-auto">Real reviews from real Colorado couch lovers</p>
+            <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+              <span style={{
+                fontFamily: "var(--ccf-font-display)",
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.15em",
+                color: "var(--ccf-cherry)",
+              }}>
+                Happy Customers
+              </span>
+              <h2 style={{
+                fontFamily: "var(--ccf-font-display)",
+                fontWeight: 800,
+                fontStyle: "italic",
+                fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                lineHeight: 1.1,
+                color: "var(--ccf-navy)",
+                marginTop: "0.5rem",
+                marginBottom: "0.75rem",
+              }}>
+                What People Are Saying
+              </h2>
+              <p style={{ color: "var(--ccf-gray)", maxWidth: "28rem", margin: "0 auto" }}>
+                Real reviews from real Colorado couch lovers
+              </p>
             </div>
           </AnimateIn>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <div className="nb-grid-3">
             {[
               {
                 quote: "Found an amazing sectional for our new apartment. The whole process took less than a day from browsing to pickup. Incredible value!",
                 name: "Sarah M.",
                 location: "Denver, CO",
-                rating: 5,
               },
               {
                 quote: "Sold our old couch in hours. They picked it up and paid us on the spot. Way easier than dealing with Craigslist or Facebook Marketplace.",
                 name: "Mike & Jen T.",
                 location: "Boulder, CO",
-                rating: 5,
               },
               {
-                quote: "Third time buying from Colorado Couch Ranch. They always have unique, quality pieces you won't find anywhere else. Highly recommend!",
+                quote: "Third time buying from Colorado Couch Farm. They always have unique, quality pieces you won't find anywhere else. Highly recommend!",
                 name: "Alex R.",
                 location: "Fort Collins, CO",
-                rating: 5,
               },
             ].map((review, idx) => (
-              <AnimateIn key={review.name} delay={idx * 150} variant="fade-up">
-                <div className="bg-white rounded-2xl p-6 shadow-sm card-hover-lift h-full flex flex-col">
+              <AnimateIn key={review.name} delay={idx * 120} variant="fade-up">
+                <div
+                  style={{
+                    padding: "1.75rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                    background: "var(--ccf-white)",
+                    borderRadius: "var(--ccf-radius)",
+                    boxShadow: "var(--ccf-shadow)",
+                    border: "var(--ccf-border)",
+                  }}
+                >
                   {/* Stars */}
-                  <div className="flex gap-0.5 mb-4">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      <svg key={i} className="w-5 h-5 text-brand-400" fill="currentColor" viewBox="0 0 20 20">
+                  <div style={{ display: "flex", gap: "2px", marginBottom: "1rem" }}>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <svg key={i} className="nb-star" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
                   </div>
-                  <blockquote className="text-gray-600 text-sm leading-relaxed flex-1">
+                  <blockquote style={{
+                    flex: 1,
+                    borderLeft: "3px solid var(--ccf-cyan)",
+                    paddingLeft: "1rem",
+                    fontStyle: "italic",
+                    fontSize: "1rem",
+                    lineHeight: 1.6,
+                    color: "var(--ccf-black)",
+                  }}>
                     &ldquo;{review.quote}&rdquo;
                   </blockquote>
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="font-semibold text-sm">{review.name}</p>
-                    <p className="text-gray-400 text-xs">{review.location}</p>
+                  <div style={{ marginTop: "1.25rem", paddingTop: "1rem", borderTop: "1px solid var(--ccf-gray-light)" }}>
+                    <p style={{
+                      fontFamily: "var(--ccf-font-display)",
+                      fontWeight: 700,
+                      fontSize: "0.875rem",
+                      color: "var(--ccf-navy)",
+                    }}>
+                      {review.name}
+                    </p>
+                    <p style={{ color: "var(--ccf-gray)", fontSize: "0.75rem" }}>{review.location}</p>
                   </div>
                 </div>
               </AnimateIn>
@@ -263,42 +520,87 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Sell CTA */}
+      {/* ── Sell CTA ── */}
       <AnimateIn variant="fade-in">
-        <section className="relative text-white py-20 md:py-24 overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1920&q=80&auto=format&fit=crop"
-            alt=""
-            fill
-            className="object-cover"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-ranch-900/90 to-ranch-800/85 animate-gradient" />
-          {/* Floating accent blobs */}
-          <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl animate-float-slow" />
-          <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-ranch-400/10 rounded-full blur-3xl animate-float-delayed" />
+        <section
+          style={{
+            padding: "5rem 0",
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden",
+            background: "linear-gradient(135deg, var(--ccf-cyan) 0%, #00B8E6 100%)",
+            color: "var(--ccf-navy)",
+          }}
+        >
+          {/* Decorative circles */}
+          <div style={{
+            position: "absolute",
+            top: "-60px",
+            right: "-60px",
+            width: "200px",
+            height: "200px",
+            borderRadius: "50%",
+            background: "rgba(0, 57, 134, 0.1)",
+            pointerEvents: "none",
+          }} />
+          <div style={{
+            position: "absolute",
+            bottom: "-40px",
+            left: "-40px",
+            width: "160px",
+            height: "160px",
+            borderRadius: "50%",
+            background: "rgba(254, 229, 107, 0.2)",
+            pointerEvents: "none",
+          }} />
 
-          <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-            <AnimateIn variant="scale" delay={100}>
-              <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 group">
-                <svg className="w-7 h-7 text-brand-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+          <div className="nb-container" style={{ position: "relative", zIndex: 1, padding: "0 var(--ccf-gutter)" }}>
+            <AnimateIn variant="fade-up" delay={100}>
+              <div
+                style={{
+                  width: "4rem",
+                  height: "4rem",
+                  borderRadius: "50%",
+                  background: "rgba(0, 57, 134, 0.15)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 1.5rem",
+                }}
+              >
+                <svg style={{ width: "2rem", height: "2rem", color: "var(--ccf-navy)" }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </AnimateIn>
             <AnimateIn variant="fade-up" delay={200}>
-              <h2 className="text-3xl font-bold mb-4">Have a Couch to Sell?</h2>
+              <h2 style={{
+                fontFamily: "var(--ccf-font-display)",
+                fontWeight: 900,
+                fontStyle: "italic",
+                fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                lineHeight: 1.1,
+                color: "var(--ccf-navy)",
+                marginBottom: "1rem",
+              }}>
+                Have a Couch to Sell?
+              </h2>
             </AnimateIn>
             <AnimateIn variant="fade-up" delay={300}>
-              <p className="text-ranch-200 mb-8 max-w-xl mx-auto leading-relaxed">
+              <p style={{
+                color: "var(--ccf-navy-dark)",
+                opacity: 0.8,
+                marginBottom: "2rem",
+                maxWidth: "32rem",
+                margin: "0 auto 2rem",
+                lineHeight: 1.7,
+                fontSize: "1.0625rem",
+              }}>
                 We buy quality couches in good condition. Submit your couch details and we&apos;ll get back to you with an offer.
               </p>
             </AnimateIn>
             <AnimateIn variant="fade-up" delay={400}>
-              <Link
-                href="/sell"
-                className="inline-block bg-brand-500 hover:bg-brand-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/25 hover:scale-[1.02] active:scale-[0.98]"
-              >
+              <Link href="/sell" className="nb-btn nb-btn--primary">
                 Sell Your Couch
               </Link>
             </AnimateIn>
