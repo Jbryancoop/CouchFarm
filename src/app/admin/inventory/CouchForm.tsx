@@ -26,17 +26,79 @@ export function CouchForm({ couch }: { couch?: CouchData }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>(couch?.images.map((i) => i.url) || []);
-  const [newImageUrl, setNewImageUrl] = useState("");
-
-  function addImage() {
-    if (newImageUrl.trim()) {
-      setImageUrls([...imageUrls, newImageUrl.trim()]);
-      setNewImageUrl("");
-    }
-  }
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
 
   function removeImage(index: number) {
     setImageUrls(imageUrls.filter((_, i) => i !== index));
+  }
+
+  async function uploadFiles(files: FileList | File[]) {
+    setUploading(true);
+    const newUrls: string[] = [];
+
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) continue;
+
+      try {
+        // Try S3 presigned URL first
+        const presignRes = await fetch("/api/admin/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: file.name, contentType: file.type }),
+        });
+
+        if (presignRes.ok) {
+          const data = await presignRes.json();
+          if (data.uploadUrl) {
+            // S3 path: upload directly to presigned URL
+            await fetch(data.uploadUrl, {
+              method: "PUT",
+              headers: { "Content-Type": file.type },
+              body: file,
+            });
+            newUrls.push(data.publicUrl);
+          } else if (data.publicUrl) {
+            // Local upload path
+            newUrls.push(data.publicUrl);
+          }
+        } else {
+          // Fallback: local file upload via FormData
+          const formData = new FormData();
+          formData.append("file", file);
+          const uploadRes = await fetch("/api/admin/upload", {
+            method: "POST",
+            body: formData,
+          });
+          if (uploadRes.ok) {
+            const data = await uploadRes.json();
+            newUrls.push(data.publicUrl);
+          }
+        }
+      } catch (err) {
+        console.error("Upload failed:", err);
+      }
+    }
+
+    if (newUrls.length > 0) {
+      setImageUrls((prev) => [...prev, ...newUrls]);
+    }
+    setUploading(false);
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files.length > 0) {
+      uploadFiles(e.target.files);
+      e.target.value = "";
+    }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files.length > 0) {
+      uploadFiles(e.dataTransfer.files);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -168,37 +230,65 @@ export function CouchForm({ couch }: { couch?: CouchData }) {
 
       {/* Images */}
       <div>
-        <label className="block text-sm font-medium mb-2">Images</label>
-        <div className="space-y-2 mb-3">
-          {imageUrls.map((url, i) => (
-            <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg p-2">
-              <img src={url} alt="" className="w-12 h-12 object-cover rounded" />
-              <span className="text-xs text-gray-500 truncate flex-1">{url}</span>
-              <button type="button" onClick={() => removeImage(i)} className="text-red-500 text-xs hover:text-red-700">
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2">
+        <label className="block text-sm font-medium mb-2">Photos</label>
+
+        {/* Existing images */}
+        {imageUrls.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+            {imageUrls.map((url, i) => (
+              <div key={i} className="relative group rounded-lg overflow-hidden border border-gray-200">
+                <img src={url} alt="" className="w-full aspect-square object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Upload area */}
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer ${
+            dragOver ? "border-blue-400 bg-blue-50" : "border-gray-300 hover:border-gray-400"
+          }`}
+          onClick={() => document.getElementById("photo-upload")?.click()}
+        >
           <input
-            type="url"
-            value={newImageUrl}
-            onChange={(e) => setNewImageUrl(e.target.value)}
-            placeholder="Paste image URL"
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            id="photo-upload"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileSelect}
+            className="hidden"
           />
-          <button
-            type="button"
-            onClick={addImage}
-            className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition"
-          >
-            Add
-          </button>
+          {uploading ? (
+            <div className="flex flex-col items-center gap-2">
+              <svg className="w-8 h-8 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span className="text-sm text-gray-500">Uploading...</span>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
+              </svg>
+              <div>
+                <span className="text-sm font-medium text-blue-600">Click to upload</span>
+                <span className="text-sm text-gray-500"> or drag and drop</span>
+              </div>
+              <span className="text-xs text-gray-400">PNG, JPG, WEBP up to 10MB</span>
+            </div>
+          )}
         </div>
-        <p className="text-xs text-gray-400 mt-1">
-          Add image URLs. For S3 uploads, configure your AWS credentials in .env
-        </p>
       </div>
 
       <div className="flex gap-3 pt-2">
