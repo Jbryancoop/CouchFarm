@@ -41,19 +41,19 @@ export function Header() {
       }}
     >
       <div className="nb-container" style={{ padding: "0 var(--ccf-gutter)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: scrolled ? "5rem" : "6.5rem", transition: "height 0.3s ease" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: scrolled ? "5rem" : "7.5rem", transition: "height 0.3s ease" }}>
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: "1rem", textDecoration: "none", color: "inherit" }}>
             <Image
               src="/brand/cow-circle.png"
               alt="Colorado Couch Farm"
-              width={120}
-              height={120}
+              width={160}
+              height={160}
               style={{
-                width: scrolled ? "3.5rem" : "5rem",
-                height: scrolled ? "3.5rem" : "5rem",
+                width: scrolled ? "4rem" : "6rem",
+                height: scrolled ? "4rem" : "6rem",
                 transition: "all 0.3s ease",
                 objectFit: "contain",
-                filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.35))",
+                filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.4))",
               }}
               priority
             />
@@ -62,7 +62,7 @@ export function Header() {
                 fontFamily: "var(--ccf-font-display)",
                 fontWeight: 800,
                 fontStyle: "italic",
-                fontSize: scrolled ? "1.125rem" : "1.375rem",
+                fontSize: scrolled ? "1.25rem" : "1.5rem",
                 lineHeight: 1.15,
                 transition: "font-size 0.3s ease",
               }}>
@@ -71,7 +71,7 @@ export function Header() {
               <span className="nb-desktop-only" style={{
                 fontFamily: "var(--ccf-font-display)",
                 fontWeight: 500,
-                fontSize: "0.6875rem",
+                fontSize: "0.75rem",
                 opacity: 0.7,
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
