@@ -5,38 +5,23 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 interface InventoryFilterProps {
   styles: { value: string; label: string }[];
   colors: string[];
-  initialStyle?: string;
-  initialColor?: string;
+  initialStyles?: string[];
+  initialColors?: string[];
   totalCount: number;
-  onFilter: (filters: { style: string; color: string; search: string }) => void;
+  onFilter: (filters: { styles: string[]; colors: string[]; search: string }) => void;
 }
-
-const COLOR_MAP: Record<string, string> = {
-  Beige: "#F5F5DC",
-  Black: "#1a1a1a",
-  Blue: "#3B82F6",
-  Brown: "#8B4513",
-  Cream: "#FFFDD0",
-  Gray: "#9CA3AF",
-  Green: "#22C55E",
-  Navy: "#003986",
-  Orange: "#F97316",
-  Red: "#EF4444",
-  Tan: "#D2B48C",
-  White: "#FFFFFF",
-};
 
 export default function InventoryFilter({
   styles,
   colors,
-  initialStyle = "",
-  initialColor = "",
+  initialStyles = [],
+  initialColors = [],
   totalCount,
   onFilter,
 }: InventoryFilterProps) {
   const [search, setSearch] = useState("");
-  const [selectedStyle, setSelectedStyle] = useState(initialStyle);
-  const [selectedColor, setSelectedColor] = useState(initialColor);
+  const [selectedStyles, setSelectedStyles] = useState<string[]>(initialStyles);
+  const [selectedColors, setSelectedColors] = useState<string[]>(initialColors);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onFilterRef = useRef(onFilter);
 
@@ -45,15 +30,15 @@ export default function InventoryFilter({
   }, [onFilter]);
 
   const fireFilter = useCallback(
-    (overrides: Partial<{ style: string; color: string; search: string }>) => {
+    (overrides: Partial<{ styles: string[]; colors: string[]; search: string }>) => {
       const filters = {
-        style: overrides.style ?? selectedStyle,
-        color: overrides.color ?? selectedColor,
+        styles: overrides.styles ?? selectedStyles,
+        colors: overrides.colors ?? selectedColors,
         search: overrides.search ?? search,
       };
       onFilterRef.current(filters);
     },
-    [selectedStyle, selectedColor, search]
+    [selectedStyles, selectedColors, search]
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,25 +51,46 @@ export default function InventoryFilter({
   };
 
   const handleStyleClick = (value: string) => {
-    setSelectedStyle(value);
-    fireFilter({ style: value });
+    let next: string[];
+    if (selectedStyles.includes(value)) {
+      next = selectedStyles.filter((s) => s !== value);
+    } else {
+      next = [...selectedStyles, value];
+    }
+    setSelectedStyles(next);
+    fireFilter({ styles: next });
+  };
+
+  const handleAllStyles = () => {
+    setSelectedStyles([]);
+    fireFilter({ styles: [] });
   };
 
   const handleColorClick = (color: string) => {
-    const next = selectedColor === color ? "" : color;
-    setSelectedColor(next);
-    fireFilter({ color: next });
+    let next: string[];
+    if (selectedColors.includes(color)) {
+      next = selectedColors.filter((c) => c !== color);
+    } else {
+      next = [...selectedColors, color];
+    }
+    setSelectedColors(next);
+    fireFilter({ colors: next });
+  };
+
+  const handleAllColors = () => {
+    setSelectedColors([]);
+    fireFilter({ colors: [] });
   };
 
   const activeCount =
-    (selectedStyle ? 1 : 0) + (selectedColor ? 1 : 0) + (search ? 1 : 0);
+    selectedStyles.length + selectedColors.length + (search ? 1 : 0);
 
   const clearAll = () => {
     setSearch("");
-    setSelectedStyle("");
-    setSelectedColor("");
+    setSelectedStyles([]);
+    setSelectedColors([]);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    onFilterRef.current({ style: "", color: "", search: "" });
+    onFilterRef.current({ styles: [], colors: [], search: "" });
   };
 
   useEffect(() => {
@@ -93,35 +99,113 @@ export default function InventoryFilter({
     };
   }, []);
 
+  const allStylesSelected = selectedStyles.length === 0;
+  const allColorsSelected = selectedColors.length === 0;
+
+  const COLOR_HEX: Record<string, string> = {
+    Beige: "#F5F5DC",
+    Black: "#1a1a1a",
+    Brown: "#8B4513",
+    Cream: "#FFFDD0",
+    Gray: "#9CA3AF",
+    Tan: "#D2B48C",
+    White: "#FFFFFF",
+  };
+
+  const pill = (
+    isActive: boolean,
+    onClick: () => void,
+    label: string,
+    key: string
+  ) => (
+    <button
+      key={key}
+      onClick={onClick}
+      style={{
+        flexShrink: 0,
+        padding: "6px 14px",
+        borderRadius: 50,
+        border: isActive ? "2px solid var(--ccf-navy)" : "1.5px solid var(--ccf-gray-light)",
+        background: isActive ? "var(--ccf-navy)" : "var(--ccf-white)",
+        color: isActive ? "var(--ccf-white)" : "var(--ccf-black)",
+        fontSize: "13px",
+        fontWeight: isActive ? 600 : 400,
+        fontFamily: "inherit",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}
+    </button>
+  );
+
+  const colorPill = (
+    isActive: boolean,
+    onClick: () => void,
+    label: string,
+    key: string
+  ) => {
+    const hex = COLOR_HEX[label] || "#ccc";
+    const isLight = label === "White" || label === "Cream" || label === "Beige";
+    return (
+      <button
+        key={key}
+        onClick={onClick}
+        style={{
+          flexShrink: 0,
+          padding: "5px 12px 5px 8px",
+          borderRadius: 50,
+          border: isActive ? "2px solid var(--ccf-navy)" : "1.5px solid var(--ccf-gray-light)",
+          background: isActive ? "var(--ccf-navy)" : "var(--ccf-white)",
+          color: isActive ? "var(--ccf-white)" : "var(--ccf-black)",
+          fontSize: "13px",
+          fontWeight: isActive ? 600 : 400,
+          fontFamily: "inherit",
+          cursor: "pointer",
+          transition: "all 0.2s ease",
+          whiteSpace: "nowrap",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "6px",
+        }}
+      >
+        <span
+          style={{
+            width: 14,
+            height: 14,
+            borderRadius: "50%",
+            background: hex,
+            border: isLight ? "1.5px solid var(--ccf-gray-light)" : "1.5px solid transparent",
+            flexShrink: 0,
+          }}
+        />
+        {label}
+      </button>
+    );
+  };
+
   return (
     <div
       style={{
-        background: "var(--ccf-white, #FFFFFF)",
-        borderRadius: "var(--ccf-radius, 20px)",
-        boxShadow: "var(--ccf-shadow, 0 4px 24px rgba(0,0,0,0.08))",
-        padding: "24px",
-        marginBottom: "32px",
-        fontFamily: "var(--ccf-font-display, Rubik), sans-serif",
+        background: "var(--ccf-white)",
+        borderRadius: 20,
+        boxShadow: "0 2px 16px rgba(0,57,134,0.06)",
+        padding: "20px 24px",
+        marginBottom: 28,
+        fontFamily: "var(--ccf-font-display), sans-serif",
+        display: "flex",
+        flexDirection: "column",
+        gap: "14px",
       }}
     >
-      {/* Search input */}
-      <div style={{ position: "relative", marginBottom: "20px" }}>
+      {/* Search */}
+      <div style={{ position: "relative" }}>
         <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="var(--ccf-gray, #5A6A7E)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{
-            position: "absolute",
-            left: "14px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            pointerEvents: "none",
-          }}
+          width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="var(--ccf-gray)" strokeWidth="2.5"
+          strokeLinecap="round" strokeLinejoin="round"
+          style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}
         >
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -133,184 +217,70 @@ export default function InventoryFilter({
           placeholder="Search couches..."
           style={{
             width: "100%",
-            padding: "12px 16px 12px 42px",
-            border: "1.5px solid var(--ccf-gray-light, #E8ECF1)",
-            borderRadius: "var(--ccf-radius-sm, 12px)",
-            fontSize: "15px",
+            padding: "10px 14px 10px 40px",
+            border: "1.5px solid var(--ccf-gray-light)",
+            borderRadius: 12,
+            fontSize: 14,
             fontFamily: "inherit",
-            color: "var(--ccf-black, #0A1628)",
-            background: "var(--ccf-white, #FFFFFF)",
+            color: "var(--ccf-black)",
+            background: "var(--ccf-white)",
             outline: "none",
             boxSizing: "border-box",
-            transition: "border-color 0.2s ease",
+            transition: "border-color 0.2s",
           }}
-          onFocus={(e) =>
-            (e.currentTarget.style.borderColor =
-              "var(--ccf-cyan, #0DD5FF)")
-          }
-          onBlur={(e) =>
-            (e.currentTarget.style.borderColor =
-              "var(--ccf-gray-light, #E8ECF1)")
-          }
+          onFocus={(e) => (e.currentTarget.style.borderColor = "var(--ccf-cyan)")}
+          onBlur={(e) => (e.currentTarget.style.borderColor = "var(--ccf-gray-light)")}
         />
       </div>
 
-      {/* Style pills */}
-      <div
-        style={{
-          display: "flex",
-          gap: "8px",
-          overflowX: "auto",
-          paddingBottom: "4px",
-          marginBottom: "16px",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
-      >
-        {[{ value: "", label: "All" }, ...styles].map((s) => {
-          const isActive = selectedStyle === s.value;
-          return (
-            <button
-              key={s.value}
-              onClick={() => handleStyleClick(s.value)}
-              style={{
-                flexShrink: 0,
-                padding: "8px 18px",
-                borderRadius: "var(--ccf-radius-pill, 50px)",
-                border: isActive
-                  ? "1.5px solid var(--ccf-navy, #003986)"
-                  : "1.5px solid var(--ccf-navy, #003986)",
-                background: isActive
-                  ? "var(--ccf-navy, #003986)"
-                  : "var(--ccf-white, #FFFFFF)",
-                color: isActive
-                  ? "var(--ccf-white, #FFFFFF)"
-                  : "var(--ccf-navy, #003986)",
-                fontSize: "14px",
-                fontWeight: 500,
-                fontFamily: "inherit",
-                cursor: "pointer",
-                transition: "all 0.25s ease",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {s.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Color swatches */}
-      {colors.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            flexWrap: "wrap",
-            alignItems: "center",
-            marginBottom: "16px",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "13px",
-              color: "var(--ccf-gray, #5A6A7E)",
-              fontWeight: 500,
-              marginRight: "4px",
-            }}
-          >
-            Color
-          </span>
-          {colors.map((color) => {
-            const hex = COLOR_MAP[color] || "#ccc";
-            const isActive = selectedColor === color;
-            const isLight =
-              color === "White" || color === "Cream" || color === "Beige";
-            return (
-              <button
-                key={color}
-                title={color}
-                onClick={() => handleColorClick(color)}
-                style={{
-                  width: "28px",
-                  height: "28px",
-                  borderRadius: "50%",
-                  border: isLight
-                    ? "1px solid var(--ccf-gray-light, #E8ECF1)"
-                    : "1px solid transparent",
-                  background: hex,
-                  cursor: "pointer",
-                  padding: 0,
-                  outline: isActive
-                    ? "3px solid var(--ccf-cyan, #0DD5FF)"
-                    : "none",
-                  outlineOffset: "2px",
-                  transition: "outline 0.2s ease",
-                  flexShrink: 0,
-                }}
-              />
-            );
-          })}
-        </div>
-      )}
-
-      {/* Footer: active filters badge, clear all, result count */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "8px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          {activeCount > 0 && (
-            <>
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "var(--ccf-navy, #003986)",
-                  color: "var(--ccf-white, #FFFFFF)",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  width: "22px",
-                  height: "22px",
-                  borderRadius: "50%",
-                  lineHeight: 1,
-                }}
-              >
-                {activeCount}
-              </span>
-              <button
-                onClick={clearAll}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "var(--ccf-cherry, #FB104B)",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  padding: 0,
-                  textDecoration: "underline",
-                  textUnderlineOffset: "2px",
-                }}
-              >
-                Clear all
-              </button>
-            </>
+      {/* Style row */}
+      <div>
+        <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--ccf-gray)", marginBottom: 6, display: "block" }}>
+          Style
+        </span>
+        <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2, scrollbarWidth: "none", flexWrap: "wrap" }}>
+          {pill(allStylesSelected, handleAllStyles, "All", "style-all")}
+          {styles.map((s) =>
+            pill(selectedStyles.includes(s.value), () => handleStyleClick(s.value), s.label, `style-${s.value}`)
           )}
         </div>
-        <span
-          style={{
-            fontSize: "14px",
-            color: "var(--ccf-gray, #5A6A7E)",
-            fontWeight: 500,
-          }}
-        >
+      </div>
+
+      {/* Color row — text pills, not swatches */}
+      <div>
+        <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--ccf-gray)", marginBottom: 6, display: "block" }}>
+          Color
+        </span>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {pill(allColorsSelected, handleAllColors, "All", "color-all")}
+          {colors.map((color) =>
+            colorPill(selectedColors.includes(color), () => handleColorClick(color), color, `color-${color}`)
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 4, borderTop: "1px solid var(--ccf-gray-light)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {activeCount > 0 && (
+            <button
+              onClick={clearAll}
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--ccf-cherry)",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                padding: 0,
+              }}
+            >
+              Clear filters ({activeCount})
+            </button>
+          )}
+        </div>
+        <span style={{ fontSize: 13, color: "var(--ccf-gray)", fontWeight: 500 }}>
           {totalCount} {totalCount === 1 ? "couch" : "couches"}
         </span>
       </div>

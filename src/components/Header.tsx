@@ -41,19 +41,18 @@ export function Header() {
       }}
     >
       <div className="nb-container" style={{ padding: "0 var(--ccf-gutter)" }}>
-        <div className="ccf-header-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: scrolled ? "5rem" : "7.5rem", transition: "height 0.3s ease" }}>
-          <Link href="/" className="ccf-header-logo" style={{ display: "flex", alignItems: "center", gap: "1rem", textDecoration: "none", color: "inherit" }}>
+        <div className="ccf-header-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "5rem" }}>
+          <Link href="/" className="ccf-header-logo" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none", color: "inherit" }}>
             <Image
               src="/brand/cow-circle.png"
               alt="Colorado Couch Farm"
-              width={160}
-              height={160}
+              width={120}
+              height={120}
               style={{
-                width: scrolled ? "4rem" : "6rem",
-                height: scrolled ? "4rem" : "6rem",
-                transition: "all 0.3s ease",
+                width: "3.5rem",
+                height: "3.5rem",
                 objectFit: "contain",
-                filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.4))",
+                filter: "drop-shadow(0 3px 8px rgba(0,0,0,0.35))",
               }}
               priority
             />
@@ -62,16 +61,15 @@ export function Header() {
                 fontFamily: "var(--ccf-font-display)",
                 fontWeight: 800,
                 fontStyle: "italic",
-                fontSize: scrolled ? "1.25rem" : "1.5rem",
+                fontSize: "1.25rem",
                 lineHeight: 1.15,
-                transition: "font-size 0.3s ease",
               }}>
                 {siteConfig.name}
               </span>
               <span className="nb-desktop-only" style={{
                 fontFamily: "var(--ccf-font-display)",
                 fontWeight: 500,
-                fontSize: "0.75rem",
+                fontSize: "0.6875rem",
                 opacity: 0.7,
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",

@@ -1,10 +1,10 @@
 export const siteConfig = {
-  name: "Colorado Couch Ranch",
-  tagline: "Quality Couches, Ranch-Style Hospitality",
+  name: "Colorado Couch Farm",
+  tagline: "All we do is Couches",
   description:
-    "Colorado's premier destination for quality pre-owned couches. Browse our curated selection or tell us what you're looking for.",
-  phone: "",
-  email: "info@coloradocouchranch.com",
+    "Beautiful Couches. Actually Affordable. Delivered to your living room in 24hrs.",
+  phone: "719-551-1364",
+  email: "info@coloradocouchfarm.com",
   address: "",
   social: {
     facebook: "",
@@ -25,18 +25,11 @@ export const couchStyles = [
 ] as const;
 
 export const couchColors = [
-  "Beige",
   "Black",
-  "Blue",
   "Brown",
   "Cream",
   "Gray",
-  "Green",
-  "Navy",
-  "Orange",
-  "Red",
   "Tan",
-  "White",
   "Other",
 ] as const;
 

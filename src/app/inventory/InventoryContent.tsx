@@ -24,12 +24,12 @@ export default function InventoryContent({
   initialColor = "",
 }: InventoryContentProps) {
   const [filtered, setFiltered] = useState<CouchWithImage[]>(() =>
-    applyFilters(couches, initialStyle, initialColor, "")
+    applyFilters(couches, initialStyle ? [initialStyle] : [], initialColor ? [initialColor] : [], "")
   );
 
   const handleFilter = useCallback(
-    (filters: { style: string; color: string; search: string }) => {
-      setFiltered(applyFilters(couches, filters.style, filters.color, filters.search));
+    (filters: { styles: string[]; colors: string[]; search: string }) => {
+      setFiltered(applyFilters(couches, filters.styles, filters.colors, filters.search));
     },
     [couches]
   );
@@ -39,8 +39,8 @@ export default function InventoryContent({
       <InventoryFilter
         styles={styles}
         colors={colors}
-        initialStyle={initialStyle}
-        initialColor={initialColor}
+        initialStyles={initialStyle ? [initialStyle] : []}
+        initialColors={initialColor ? [initialColor] : []}
         totalCount={filtered.length}
         onFilter={handleFilter}
       />
@@ -116,15 +116,15 @@ export default function InventoryContent({
 
 function applyFilters(
   couches: CouchWithImage[],
-  style: string,
-  color: string,
+  styles: string[],
+  colors: string[],
   search: string
 ): CouchWithImage[] {
   const q = search.toLowerCase().trim();
 
   return couches.filter((couch) => {
-    if (style && couch.style !== style) return false;
-    if (color && couch.color !== color) return false;
+    if (styles.length > 0 && !styles.includes(couch.style)) return false;
+    if (colors.length > 0 && !colors.includes(couch.color)) return false;
     if (q) {
       const haystack = [
         couch.title,

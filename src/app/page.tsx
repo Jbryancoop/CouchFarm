@@ -103,7 +103,8 @@ export default async function HomePage() {
                     marginBottom: "1.5rem",
                   }}
                 >
-                  Beautiful Couches.{" "}
+                  Beautiful Couches.
+                  <br />
                   <span style={{ color: "var(--ccf-cyan)" }}>Actually Affordable.</span>
                   <br />
                   <span style={{ color: "var(--ccf-sunny)" }}>Delivered in 24hrs.</span>
