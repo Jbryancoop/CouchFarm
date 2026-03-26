@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Colorado Couch Farm",
-  tagline: "All we do is Couches",
+  tagline: "Couches are all we do",
   description:
     "Beautiful Couches. Actually Affordable. Delivered to your living room in 24hrs.",
   phone: "719-551-1364",
