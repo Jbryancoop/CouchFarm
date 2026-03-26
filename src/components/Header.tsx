@@ -41,8 +41,8 @@ export function Header() {
       }}
     >
       <div className="nb-container" style={{ padding: "0 var(--ccf-gutter)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: scrolled ? "5rem" : "7.5rem", transition: "height 0.3s ease" }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "1rem", textDecoration: "none", color: "inherit" }}>
+        <div className="ccf-header-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: scrolled ? "5rem" : "7.5rem", transition: "height 0.3s ease" }}>
+          <Link href="/" className="ccf-header-logo" style={{ display: "flex", alignItems: "center", gap: "1rem", textDecoration: "none", color: "inherit" }}>
             <Image
               src="/brand/cow-circle.png"
               alt="Colorado Couch Farm"
@@ -143,7 +143,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="nb-mobile-only"
+            className="nb-mobile-only ccf-header-hamburger"
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
             aria-expanded={open}

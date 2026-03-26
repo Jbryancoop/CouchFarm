@@ -765,6 +765,26 @@ html {
   transform: translateY(0);
 }
 
+/* --- Header mobile centering --- */
+@media (max-width: 767px) {
+  .ccf-header-row {
+    justify-content: center !important;
+    position: relative;
+  }
+  .ccf-header-logo {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+    gap: 0.375rem !important;
+  }
+  .ccf-header-hamburger {
+    position: absolute !important;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 /* --- Visually hidden (for accessibility) --- */
 .nb-sr-only {
   position: absolute;
