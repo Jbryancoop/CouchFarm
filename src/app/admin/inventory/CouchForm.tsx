@@ -41,39 +41,19 @@ export function CouchForm({ couch }: { couch?: CouchData }) {
       if (!file.type.startsWith("image/")) continue;
 
       try {
-        // Try S3 presigned URL first
-        const presignRes = await fetch("/api/admin/upload", {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/admin/upload", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: file.name, contentType: file.type }),
+          body: formData,
         });
 
-        if (presignRes.ok) {
-          const data = await presignRes.json();
-          if (data.uploadUrl) {
-            // S3 path: upload directly to presigned URL
-            await fetch(data.uploadUrl, {
-              method: "PUT",
-              headers: { "Content-Type": file.type },
-              body: file,
-            });
-            newUrls.push(data.publicUrl);
-          } else if (data.publicUrl) {
-            // Local upload path
-            newUrls.push(data.publicUrl);
-          }
+        if (res.ok) {
+          const data = await res.json();
+          newUrls.push(data.publicUrl);
         } else {
-          // Fallback: local file upload via FormData
-          const formData = new FormData();
-          formData.append("file", file);
-          const uploadRes = await fetch("/api/admin/upload", {
-            method: "POST",
-            body: formData,
-          });
-          if (uploadRes.ok) {
-            const data = await uploadRes.json();
-            newUrls.push(data.publicUrl);
-          }
+          const data = await res.json();
+          console.error("Upload failed:", data.error);
         }
       } catch (err) {
         console.error("Upload failed:", err);
