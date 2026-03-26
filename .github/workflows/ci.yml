@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx tsc --noEmit
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+    env:
+      DATABASE_URL: file:./test.db
+      NEXT_PUBLIC_SITE_URL: https://coloradocouchfarm.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma db push --skip-generate
+      - run: npm run build
+
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for secrets
+        run: |
+          echo "Scanning for potential secrets..."
+          PATTERNS='(PRIVATE.KEY|SECRET|PASSWORD|TOKEN|API.KEY|AWS_ACCESS|aws_secret)'
+          # Check tracked files for hardcoded secrets (exclude .env.example, workflows, lockfiles)
+          FOUND=$(git diff --cached --name-only 2>/dev/null || git diff HEAD~1 --name-only 2>/dev/null || echo "")
+          if [ -z "$FOUND" ]; then
+            FOUND=$(find src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" \) | head -100)
+          fi
+          LEAKED=0
+          for f in $FOUND; do
+            if [ -f "$f" ] && echo "$f" | grep -qvE '(\.env\.example|node_modules|package-lock|\.github)'; then
+              if grep -inE "$PATTERNS" "$f" | grep -ivE '(process\.env|import|require|interface|type |declare|\/\/|console\.log|\.md)' | head -5; then
+                echo "⚠️  Potential secret in: $f"
+                LEAKED=1
+              fi
+            fi
+          done
+          if [ $LEAKED -eq 1 ]; then
+            echo "::warning::Potential secrets detected. Please review the files above."
+          else
+            echo "✅ No secrets detected"
+          fi

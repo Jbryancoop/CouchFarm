@@ -6,3 +6,25 @@ node_modules
 *.db-journal
 /generated
 /public/uploads
+.vercel
+
+# Secrets & credentials
+.env.production
+.env.*.local
+*.pem
+*.key
+credentials.json
+service-account.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
