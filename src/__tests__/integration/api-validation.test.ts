@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { couchStyles, couchColors } from '@/lib/config';
 
-const validStyles = couchStyles.map((s) => s.value);
-const validColors: readonly string[] = couchColors;
+const validStyles: string[] = couchStyles.map((s) => s.value);
+const validColors: string[] = [...couchColors];
 
 describe('API Validation Rules', () => {
   describe('Style validation', () => {
