@@ -8,14 +8,27 @@ export function AddUserForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setPending(true);
     setError("");
     setSuccess("");
 
     const formData = new FormData(e.currentTarget);
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setPending(true);
     const res = await fetch("/api/admin/team", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -57,8 +70,18 @@ export function AddUserForm() {
 
       <div>
         <label className="block text-sm font-medium mb-1">Password *</label>
-        <input name="password" type="password" required minLength={6} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+        <input name="password" type={showPassword ? "text" : "password"} required minLength={8} autoComplete="new-password" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
       </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Confirm Password *</label>
+        <input name="confirmPassword" type={showPassword ? "text" : "password"} required minLength={8} autoComplete="new-password" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+      </div>
+
+      <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+        <input type="checkbox" checked={showPassword} onChange={(e) => setShowPassword(e.target.checked)} className="rounded" />
+        Show passwords
+      </label>
 
       <div>
         <label className="block text-sm font-medium mb-1">Role *</label>
