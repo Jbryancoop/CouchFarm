@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/lib/config";
+import { SecretAdminLink } from "./SecretAdminLink";
 
 export function Footer() {
   return (
@@ -16,13 +17,15 @@ export function Footer() {
           {/* Brand column */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", marginBottom: "1rem" }}>
-              <Image
-                src="/brand/cow-circle.png"
-                alt="Colorado Couch Farm"
-                width={56}
-                height={56}
-                style={{ width: "3.25rem", height: "3.25rem", objectFit: "contain" }}
-              />
+              <SecretAdminLink>
+                <Image
+                  src="/brand/cow-circle.png"
+                  alt="Colorado Couch Farm"
+                  width={56}
+                  height={56}
+                  style={{ width: "3.25rem", height: "3.25rem", objectFit: "contain" }}
+                />
+              </SecretAdminLink>
               <span style={{
                 fontFamily: "var(--ccf-font-display)",
                 fontWeight: 800,

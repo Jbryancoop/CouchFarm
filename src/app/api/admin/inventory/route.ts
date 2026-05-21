@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { couchStyles, couchColors } from "@/lib/config";
-
-const validStyles = couchStyles.map((s) => s.value);
-const validColors: readonly string[] = couchColors;
+import { buildCouchData, validateCouchData } from "@/lib/couch-input";
 
 export async function POST(request: Request) {
   try {
@@ -14,34 +11,28 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { title, style, color, fabricType, images, ...rest } = body;
+  const { images } = body;
+  const data = buildCouchData(body);
 
-  if (!title || !style || !color || !fabricType) {
+  if (!data.title || !data.style || !data.color || !data.fabricType) {
     return NextResponse.json({ error: "Title, style, color, and fabric type are required" }, { status: 400 });
   }
 
-  if (!validStyles.includes(style)) {
-    return NextResponse.json({ error: `Invalid style: ${style}` }, { status: 400 });
-  }
-
-  if (!validColors.includes(color)) {
-    return NextResponse.json({ error: `Invalid color: ${color}` }, { status: 400 });
+  const validationError = validateCouchData(data);
+  if (validationError) {
+    return NextResponse.json({ error: validationError }, { status: 400 });
   }
 
   const couch = await prisma.couch.create({
     data: {
-      title,
-      style,
-      color,
-      fabricType,
-      ...rest,
+      ...data,
       images: {
-        create: (images || []).map((url: string, i: number) => ({
+        create: (Array.isArray(images) ? images : []).map((url: string, i: number) => ({
           url,
           order: i,
         })),
       },
-    },
+    } as never,
   });
 
   return NextResponse.json({ couch });

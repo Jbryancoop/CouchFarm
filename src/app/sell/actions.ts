@@ -1,14 +1,26 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { isBot, isValidEmail, throttlePublicForm } from "@/lib/form-guard";
 
 export async function submitBuyRequest(formData: FormData) {
   try {
+    // Silently accept (but drop) submissions that trip the spam honeypot.
+    if (isBot(formData)) return { success: true };
+
+    if (!(await throttlePublicForm("buy-request"))) {
+      return { success: false, error: "Too many submissions. Please try again later." };
+    }
+
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
 
     if (!name || !email) {
       return { success: false, error: "Name and email are required." };
+    }
+
+    if (!isValidEmail(email)) {
+      return { success: false, error: "Please enter a valid email address." };
     }
 
     await prisma.buyRequest.create({

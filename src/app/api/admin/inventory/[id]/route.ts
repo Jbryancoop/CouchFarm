@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { couchStyles, couchColors } from "@/lib/config";
-
-const validStyles = couchStyles.map((s) => s.value);
-const validColors: readonly string[] = couchColors;
+import { buildCouchData, validateCouchData } from "@/lib/couch-input";
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -15,14 +12,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await request.json();
-  const { images, ...data } = body;
+  const { images } = body;
+  const data = buildCouchData(body, { partial: true });
 
-  if (data.style && !validStyles.includes(data.style)) {
-    return NextResponse.json({ error: `Invalid style: ${data.style}` }, { status: 400 });
-  }
-
-  if (data.color && !validColors.includes(data.color)) {
-    return NextResponse.json({ error: `Invalid color: ${data.color}` }, { status: 400 });
+  const validationError = validateCouchData(data);
+  if (validationError) {
+    return NextResponse.json({ error: validationError }, { status: 400 });
   }
 
   // Delete old images and re-create
@@ -33,12 +28,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     data: {
       ...data,
       images: {
-        create: (images || []).map((url: string, i: number) => ({
+        create: (Array.isArray(images) ? images : []).map((url: string, i: number) => ({
           url,
           order: i,
         })),
       },
-    },
+    } as never,
   });
 
   return NextResponse.json({ couch });

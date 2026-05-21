@@ -23,7 +23,12 @@ export default async function AdminBuyRequestsPage() {
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
                 <div>
                   <h3 className="font-semibold">{req.name}</h3>
-                  <p className="text-sm text-gray-500">{req.email}{req.phone && ` · ${req.phone}`}</p>
+                  <p className="text-sm text-gray-500">
+                    <a href={`mailto:${req.email}`} className="text-brand-600 hover:underline">{req.email}</a>
+                    {req.phone && (
+                      <> · <a href={`tel:${req.phone}`} className="text-brand-600 hover:underline">{req.phone}</a></>
+                    )}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <StatusBadge status={req.status} />

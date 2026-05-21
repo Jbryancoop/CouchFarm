@@ -6,8 +6,13 @@ import { v4 as uuid } from "uuid";
 const SESSION_COOKIE = "session_token";
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+/** Canonical email form. Emails are case-insensitive, so we store + match lowercased. */
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 export async function login(email: string, password: string) {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email: normalizeEmail(email) } });
   if (!user || !user.active) return null;
 
   const valid = await bcrypt.compare(password, user.password);

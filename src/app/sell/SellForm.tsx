@@ -57,6 +57,15 @@ export function SellForm({ ref_source }: { ref_source?: string }) {
       )}
 
       <input type="hidden" name="source" value={ref_source || ""} />
+      {/* Spam honeypot — hidden from real users, ignored by them, filled by bots. */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
 
       {/* Your Information */}
       <fieldset style={{ border: "none", padding: 0, margin: 0 }}>

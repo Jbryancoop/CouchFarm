@@ -22,7 +22,12 @@ export default async function AdminInquiriesPage() {
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
                 <div>
                   <h3 className="font-semibold">{inq.name}</h3>
-                  <p className="text-sm text-gray-500">{inq.email}{inq.phone && ` · ${inq.phone}`}</p>
+                  <p className="text-sm text-gray-500">
+                    <a href={`mailto:${inq.email}`} className="text-brand-600 hover:underline">{inq.email}</a>
+                    {inq.phone && (
+                      <> · <a href={`tel:${inq.phone}`} className="text-brand-600 hover:underline">{inq.phone}</a></>
+                    )}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <StatusBadge status={inq.status} />

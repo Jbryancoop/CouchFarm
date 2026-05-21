@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Payment Successful",
+  title: "Reservation Received",
 };
 
 export default async function CheckoutSuccessPage({
@@ -23,7 +23,7 @@ export default async function CheckoutSuccessPage({
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
           </svg>
           <strong>Demo Mode</strong>
-          <span>&mdash; This is a simulated confirmation. No payment was processed.</span>
+          <span>&mdash; This is a simulated confirmation. No payment was collected.</span>
         </div>
       </div>
 
@@ -35,8 +35,8 @@ export default async function CheckoutSuccessPage({
           </svg>
         </div>
 
-        <h1 className="nb-display" style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>Payment Successful!</h1>
-        <p style={{ color: "var(--nb-gray)", marginBottom: "2rem" }}>Your payment has been processed successfully.</p>
+        <h1 className="nb-display" style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>Reservation Received!</h1>
+        <p style={{ color: "var(--nb-gray)", marginBottom: "2rem" }}>Your couch is reserved. Our team will contact you to arrange payment and pickup.</p>
 
         {/* Order Summary Card */}
         <div className="nb-card--static" style={{ padding: "1.5rem", textAlign: "left", marginBottom: "1.5rem" }}>
@@ -47,7 +47,7 @@ export default async function CheckoutSuccessPage({
               <span style={{ fontWeight: 700 }}>{couchTitle}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "var(--nb-gray)" }}>Amount Paid</span>
+              <span style={{ color: "var(--nb-gray)" }}>Amount Due</span>
               <span className="nb-price">${amount.toLocaleString()}</span>
             </div>
           </div>

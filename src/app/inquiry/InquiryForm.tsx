@@ -58,6 +58,15 @@ export function InquiryForm({ couchId, ref_source }: { couchId?: string; ref_sou
 
       <input type="hidden" name="source" value={ref_source || ""} />
       {couchId && <input type="hidden" name="couchId" value={couchId} />}
+      {/* Spam honeypot — hidden from real users, ignored by them, filled by bots. */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+      />
 
       {/* Contact Info */}
       <fieldset style={{ border: "none", padding: 0, margin: 0 }}>

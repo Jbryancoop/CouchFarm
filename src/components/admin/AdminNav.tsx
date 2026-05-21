@@ -30,7 +30,7 @@ export function AdminNav({ user }: { user: User }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-6 overflow-x-auto">
-            <Link href="/admin" className="font-bold text-ranch-700 shrink-0">
+            <Link href="/admin" className="font-bold text-farm-700 shrink-0">
               Admin
             </Link>
             {navItems.map((item) => {
@@ -53,7 +53,13 @@ export function AdminNav({ user }: { user: User }) {
             })}
           </div>
           <div className="flex items-center gap-3 shrink-0 ml-4">
-            <span className="text-xs text-gray-500 hidden sm:block">{user.name}</span>
+            <Link
+              href="/admin/account"
+              className="text-xs text-gray-500 hover:text-gray-800 hidden sm:block"
+              title="Account & password"
+            >
+              {user.name}
+            </Link>
             <Link href="/" className="text-xs text-gray-400 hover:text-gray-600">
               View Site
             </Link>
