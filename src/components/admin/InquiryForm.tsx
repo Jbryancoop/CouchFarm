@@ -3,8 +3,7 @@
 import { useState } from "react";
 import type { CustomerInquiry } from "@prisma/client";
 import { couchStyles, couchColors } from "@/lib/config";
-
-const STATUSES = ["new", "contacted", "converted", "closed"] as const;
+import { inquiryStatuses } from "@/lib/lead-input";
 
 export interface InquiryFormValues {
   name: string;
@@ -51,12 +50,15 @@ export function InquiryForm({
   inquiry,
   onSave,
   onCancel,
+  onDirty,
   pending,
   serverError,
 }: {
   inquiry?: CustomerInquiry;
   onSave: (body: Record<string, unknown>) => void;
   onCancel: () => void;
+  /** Called when the user edits any field, so the parent can clear a stale serverError. */
+  onDirty?: () => void;
   pending: boolean;
   serverError?: string;
 }) {
@@ -65,6 +67,9 @@ export function InquiryForm({
 
   function set<K extends keyof InquiryFormValues>(key: K, value: InquiryFormValues[K]) {
     setValues((v) => ({ ...v, [key]: value }));
+    // Editing after a failed save should clear stale errors so they can't mask a fresh pass.
+    if (localError) setLocalError("");
+    if (serverError) onDirty?.();
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -216,7 +221,7 @@ export function InquiryForm({
             onChange={(e) => set("status", e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
           >
-            {STATUSES.map((s) => (
+            {inquiryStatuses.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>

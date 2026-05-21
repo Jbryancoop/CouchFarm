@@ -27,6 +27,7 @@ export function LeadsToolbar({
   resultCount,
   onAdd,
   addLabel,
+  searchPlaceholder = "Search name, email, phone...",
 }: {
   state: LeadsToolbarState;
   onChange: (next: LeadsToolbarState) => void;
@@ -35,6 +36,7 @@ export function LeadsToolbar({
   resultCount: number;
   onAdd: () => void;
   addLabel: string;
+  searchPlaceholder?: string;
 }) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [searchInput, setSearchInput] = useState(state.search);
@@ -79,7 +81,7 @@ export function LeadsToolbar({
           type="text"
           value={searchInput}
           onChange={handleSearch}
-          placeholder="Search name, email, phone..."
+          placeholder={searchPlaceholder}
           className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
         />
         <select

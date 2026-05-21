@@ -5,8 +5,16 @@ export const validStyles: readonly string[] = couchStyles.map((s) => s.value);
 export const validColors: readonly string[] = couchColors;
 export const validConditions: readonly string[] = conditions.map((c) => c.value);
 
-export const validInquiryStatuses: readonly string[] = ["new", "contacted", "converted", "closed"];
-export const validBuyRequestStatuses: readonly string[] = ["new", "reviewing", "accepted", "declined"];
+/** Canonical, ordered inquiry status list — single source of truth for UI + validation. */
+export const inquiryStatuses = ["new", "contacted", "converted", "closed"] as const;
+export type InquiryStatus = (typeof inquiryStatuses)[number];
+
+/** Canonical, ordered buy-request status list. */
+export const buyRequestStatuses = ["new", "reviewing", "accepted", "declined"] as const;
+export type BuyRequestStatus = (typeof buyRequestStatuses)[number];
+
+export const validInquiryStatuses: readonly string[] = inquiryStatuses;
+export const validBuyRequestStatuses: readonly string[] = buyRequestStatuses;
 
 type RawBody = Record<string, unknown>;
 

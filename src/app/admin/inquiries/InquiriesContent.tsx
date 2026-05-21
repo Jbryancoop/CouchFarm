@@ -7,8 +7,9 @@ import { UpdateStatusButton } from "@/components/admin/UpdateStatusButton";
 import { Modal } from "@/components/admin/Modal";
 import { LeadsToolbar, type LeadsToolbarState, type SortOption } from "@/components/admin/LeadsToolbar";
 import { InquiryForm } from "@/components/admin/InquiryForm";
+import { inquiryStatuses } from "@/lib/lead-input";
 
-const STATUS_OPTIONS = ["new", "contacted", "converted", "closed"];
+const STATUS_OPTIONS: string[] = [...inquiryStatuses];
 
 const SORT_OPTIONS: SortOption[] = [
   { value: "newest", label: "Newest first" },
@@ -37,6 +38,11 @@ export default function InquiriesContent({
   const [editing, setEditing] = useState<{ inquiry?: CustomerInquiry } | null>(null);
   const [pending, setPending] = useState(false);
   const [serverError, setServerError] = useState("");
+
+  // Per-row delete state: the id currently being deleted (guards double-submit),
+  // plus an inline error message surfaced on the affected card (mirrors save UX).
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<{ id: string; message: string } | null>(null);
 
   const visible = useMemo(() => {
     const q = toolbar.search.toLowerCase().trim();
@@ -116,12 +122,23 @@ export default function InquiriesContent({
   }
 
   async function handleDelete(inq: CustomerInquiry) {
+    if (deletingId) return; // guard against concurrent / double-click deletes
     if (!window.confirm(`Delete inquiry from ${inq.name}? This cannot be undone.`)) return;
-    const res = await fetch(`/api/admin/inquiries/${inq.id}`, { method: "DELETE" });
-    if (res.ok) {
-      router.refresh();
-    } else {
-      window.alert("Failed to delete inquiry.");
+
+    setDeletingId(inq.id);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`/api/admin/inquiries/${inq.id}`, { method: "DELETE" });
+      if (res.ok) {
+        router.refresh();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setDeleteError({ id: inq.id, message: data.error || "Failed to delete inquiry." });
+      }
+    } catch {
+      setDeleteError({ id: inq.id, message: "Network error. Please try again." });
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -215,12 +232,19 @@ export default function InquiriesContent({
                   <button
                     type="button"
                     onClick={() => handleDelete(inq)}
-                    className="text-xs border border-red-200 text-red-600 rounded px-3 py-1 hover:bg-red-50"
+                    disabled={deletingId === inq.id}
+                    className="text-xs border border-red-200 text-red-600 rounded px-3 py-1 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Delete
+                    {deletingId === inq.id ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>
+
+              {deleteError?.id === inq.id && (
+                <div className="bg-red-50 text-red-700 border border-red-200 rounded-lg p-3 text-sm mt-3">
+                  {deleteError.message}
+                </div>
+              )}
             </div>
           );
         })}
@@ -238,6 +262,7 @@ export default function InquiriesContent({
             inquiry={editing.inquiry}
             onSave={handleSave}
             onCancel={closeDrawer}
+            onDirty={() => setServerError("")}
             pending={pending}
             serverError={serverError}
           />
