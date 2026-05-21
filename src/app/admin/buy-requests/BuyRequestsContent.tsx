@@ -2,21 +2,21 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import type { CustomerInquiry } from "@prisma/client";
+import type { BuyRequest } from "@prisma/client";
 import { UpdateStatusButton } from "@/components/admin/UpdateStatusButton";
 import { Modal } from "@/components/admin/Modal";
 import { LeadsToolbar, type LeadsToolbarState, type SortOption } from "@/components/admin/LeadsToolbar";
-import { InquiryForm } from "@/components/admin/InquiryForm";
+import { BuyRequestForm } from "@/components/admin/BuyRequestForm";
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import { inquiryStatuses } from "@/lib/lead-input";
+import { buyRequestStatuses } from "@/lib/lead-input";
 
-const STATUS_OPTIONS: string[] = [...inquiryStatuses];
+const STATUS_OPTIONS: string[] = [...buyRequestStatuses];
 
 const STATUS_COLORS: Record<string, string> = {
   new: "bg-blue-100 text-blue-700",
-  contacted: "bg-yellow-100 text-yellow-700",
-  converted: "bg-green-100 text-green-700",
-  closed: "bg-gray-100 text-gray-600",
+  reviewing: "bg-yellow-100 text-yellow-700",
+  accepted: "bg-green-100 text-green-700",
+  declined: "bg-red-100 text-red-600",
 };
 
 const SORT_OPTIONS: SortOption[] = [
@@ -24,15 +24,17 @@ const SORT_OPTIONS: SortOption[] = [
   { value: "oldest", label: "Oldest first" },
   { value: "name", label: "Name (A–Z)" },
   { value: "status", label: "Status" },
-  { value: "budget", label: "Budget (high → low)" },
+  { value: "price", label: "Asking price (high → low)" },
 ];
 
-export default function InquiriesContent({
-  inquiries,
+export default function BuyRequestsContent({
+  buyRequests,
   styles,
+  conditions,
 }: {
-  inquiries: CustomerInquiry[];
+  buyRequests: BuyRequest[];
   styles: { value: string; label: string }[];
+  conditions: { value: string; label: string }[];
 }) {
   const router = useRouter();
 
@@ -42,8 +44,8 @@ export default function InquiriesContent({
     sort: "newest",
   });
 
-  // Drawer state: null = closed; { inquiry: undefined } = create; { inquiry } = edit.
-  const [editing, setEditing] = useState<{ inquiry?: CustomerInquiry } | null>(null);
+  // Drawer state: null = closed; { buyRequest: undefined } = create; { buyRequest } = edit.
+  const [editing, setEditing] = useState<{ buyRequest?: BuyRequest } | null>(null);
   const [pending, setPending] = useState(false);
   const [serverError, setServerError] = useState("");
 
@@ -54,10 +56,10 @@ export default function InquiriesContent({
 
   const visible = useMemo(() => {
     const q = toolbar.search.toLowerCase().trim();
-    let rows = inquiries.filter((inq) => {
-      if (toolbar.statuses.length > 0 && !toolbar.statuses.includes(inq.status)) return false;
+    let rows = buyRequests.filter((req) => {
+      if (toolbar.statuses.length > 0 && !toolbar.statuses.includes(req.status)) return false;
       if (q) {
-        const haystack = [inq.name, inq.email, inq.phone].filter(Boolean).join(" ").toLowerCase();
+        const haystack = [req.name, req.email, req.brand].filter(Boolean).join(" ").toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;
@@ -71,8 +73,8 @@ export default function InquiriesContent({
           return a.name.localeCompare(b.name);
         case "status":
           return a.status.localeCompare(b.status);
-        case "budget":
-          return (b.budgetMax ?? b.budgetMin ?? 0) - (a.budgetMax ?? a.budgetMin ?? 0);
+        case "price":
+          return (b.askingPrice ?? 0) - (a.askingPrice ?? 0);
         case "newest":
         default:
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -80,16 +82,16 @@ export default function InquiriesContent({
     });
 
     return rows;
-  }, [inquiries, toolbar]);
+  }, [buyRequests, toolbar]);
 
   function openCreate() {
     setServerError("");
-    setEditing({ inquiry: undefined });
+    setEditing({ buyRequest: undefined });
   }
 
-  function openEdit(inq: CustomerInquiry) {
+  function openEdit(req: BuyRequest) {
     setServerError("");
-    setEditing({ inquiry: inq });
+    setEditing({ buyRequest: req });
   }
 
   function closeDrawer() {
@@ -102,10 +104,10 @@ export default function InquiriesContent({
     setPending(true);
     setServerError("");
 
-    const editingExisting = editing?.inquiry;
+    const editingExisting = editing?.buyRequest;
     const url = editingExisting
-      ? `/api/admin/inquiries/${editingExisting.id}`
-      : "/api/admin/inquiries";
+      ? `/api/admin/buy-requests/${editingExisting.id}`
+      : "/api/admin/buy-requests";
     const method = editingExisting ? "PUT" : "POST";
 
     try {
@@ -120,7 +122,7 @@ export default function InquiriesContent({
         router.refresh();
       } else {
         const data = await res.json().catch(() => ({}));
-        setServerError(data.error || "Failed to save inquiry.");
+        setServerError(data.error || "Failed to save buy request.");
       }
     } catch {
       setServerError("Network error. Please try again.");
@@ -129,22 +131,22 @@ export default function InquiriesContent({
     }
   }
 
-  async function handleDelete(inq: CustomerInquiry) {
+  async function handleDelete(req: BuyRequest) {
     if (deletingId) return; // guard against concurrent / double-click deletes
-    if (!window.confirm(`Delete inquiry from ${inq.name}? This cannot be undone.`)) return;
+    if (!window.confirm(`Delete buy request from ${req.name}? This cannot be undone.`)) return;
 
-    setDeletingId(inq.id);
+    setDeletingId(req.id);
     setDeleteError(null);
     try {
-      const res = await fetch(`/api/admin/inquiries/${inq.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/buy-requests/${req.id}`, { method: "DELETE" });
       if (res.ok) {
         router.refresh();
       } else {
         const data = await res.json().catch(() => ({}));
-        setDeleteError({ id: inq.id, message: data.error || "Failed to delete inquiry." });
+        setDeleteError({ id: req.id, message: data.error || "Failed to delete buy request." });
       }
     } catch {
-      setDeleteError({ id: inq.id, message: "Network error. Please try again." });
+      setDeleteError({ id: req.id, message: "Network error. Please try again." });
     } finally {
       setDeletingId(null);
     }
@@ -152,7 +154,7 @@ export default function InquiriesContent({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Customer Inquiries ({inquiries.length})</h1>
+      <h1 className="text-2xl font-bold mb-6">Buy Requests ({buyRequests.length})</h1>
 
       <LeadsToolbar
         state={toolbar}
@@ -161,94 +163,91 @@ export default function InquiriesContent({
         sortOptions={SORT_OPTIONS}
         resultCount={visible.length}
         onAdd={openCreate}
-        addLabel="+ Add Inquiry"
+        addLabel="+ Add Buy Request"
+        searchPlaceholder="Search name, email, brand..."
       />
 
       <div className="space-y-4">
         {visible.length === 0 && (
           <div className="text-center py-12 bg-white border border-gray-200 rounded-xl">
             <p className="text-gray-500">
-              {inquiries.length === 0
-                ? "No inquiries yet."
-                : "No inquiries match your filters."}
+              {buyRequests.length === 0
+                ? "No buy requests yet."
+                : "No buy requests match your filters."}
             </p>
           </div>
         )}
 
-        {visible.map((inq) => {
-          const styleLabel =
-            styles.find((s) => s.value === inq.preferredStyle)?.label || inq.preferredStyle;
+        {visible.map((req) => {
+          const styleLabel = styles.find((s) => s.value === req.style)?.label || req.style;
+          const condLabel =
+            conditions.find((c) => c.value === req.condition)?.label || req.condition;
           return (
-            <div key={inq.id} className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6">
+            <div key={req.id} className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
                 <div>
-                  <h3 className="font-semibold">{inq.name}</h3>
+                  <h3 className="font-semibold">{req.name}</h3>
                   <p className="text-sm text-gray-500">
-                    <a href={`mailto:${inq.email}`} className="text-brand-600 hover:underline">{inq.email}</a>
-                    {inq.phone && (
-                      <> · <a href={`tel:${inq.phone}`} className="text-brand-600 hover:underline">{inq.phone}</a></>
+                    <a href={`mailto:${req.email}`} className="text-brand-600 hover:underline">{req.email}</a>
+                    {req.phone && (
+                      <> · <a href={`tel:${req.phone}`} className="text-brand-600 hover:underline">{req.phone}</a></>
                     )}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <StatusBadge status={inq.status} colors={STATUS_COLORS} />
+                  <StatusBadge status={req.status} colors={STATUS_COLORS} />
                   <UpdateStatusButton
-                    id={inq.id}
-                    type="inquiry"
-                    currentStatus={inq.status}
+                    id={req.id}
+                    type="buy-request"
+                    currentStatus={req.status}
                     options={STATUS_OPTIONS}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                {req.brand && <Detail label="Brand" value={req.brand} />}
                 {styleLabel && <Detail label="Style" value={styleLabel} />}
-                {inq.preferredColor && <Detail label="Color" value={inq.preferredColor} />}
-                {inq.hasSleeper && <Detail label="Sleeper" value="Yes" />}
-                {inq.hasReclining && <Detail label="Reclining" value="Yes" />}
-                {(inq.budgetMin || inq.budgetMax) && (
-                  <Detail
-                    label="Budget"
-                    value={`${inq.budgetMin ? `$${inq.budgetMin}` : "Any"} – ${inq.budgetMax ? `$${inq.budgetMax}` : "Any"}`}
-                  />
-                )}
-                {inq.source && <Detail label="Source" value={inq.source} />}
+                {req.color && <Detail label="Color" value={req.color} />}
+                {condLabel && <Detail label="Condition" value={condLabel} />}
+                {req.age && <Detail label="Age" value={req.age} />}
+                {req.askingPrice != null && <Detail label="Asking Price" value={`$${req.askingPrice}`} />}
               </div>
 
-              {inq.message && (
-                <p className="text-sm text-gray-600 mt-3 bg-gray-50 rounded-lg p-3">{inq.message}</p>
+              {req.description && (
+                <p className="text-sm text-gray-600 mt-3 bg-gray-50 rounded-lg p-3">{req.description}</p>
               )}
 
-              {inq.adminNotes && (
+              {req.adminNotes && (
                 <p className="text-sm text-amber-700 mt-3 bg-amber-50 rounded-lg p-3">
-                  <span className="font-medium">Notes: </span>{inq.adminNotes}
+                  <span className="font-medium">Notes: </span>{req.adminNotes}
                 </p>
               )}
 
               <div className="flex items-center justify-between mt-3">
                 <p className="text-xs text-gray-400">
-                  {new Date(inq.createdAt).toLocaleString()}
+                  {new Date(req.createdAt).toLocaleString()}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => openEdit(inq)}
+                    onClick={() => openEdit(req)}
                     className="text-xs border border-gray-300 rounded px-3 py-1 hover:bg-gray-50"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(inq)}
-                    disabled={deletingId === inq.id}
+                    onClick={() => handleDelete(req)}
+                    disabled={deletingId === req.id}
                     className="text-xs border border-red-200 text-red-600 rounded px-3 py-1 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {deletingId === inq.id ? "Deleting..." : "Delete"}
+                    {deletingId === req.id ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>
 
-              {deleteError?.id === inq.id && (
+              {deleteError?.id === req.id && (
                 <div className="bg-red-50 text-red-700 border border-red-200 rounded-lg p-3 text-sm mt-3">
                   {deleteError.message}
                 </div>
@@ -261,13 +260,13 @@ export default function InquiriesContent({
       <Modal
         open={editing !== null}
         onClose={closeDrawer}
-        title={editing?.inquiry ? "Edit Inquiry" : "Add Inquiry"}
+        title={editing?.buyRequest ? "Edit Buy Request" : "Add Buy Request"}
       >
         {editing !== null && (
-          <InquiryForm
-            // Remount on target change so form state resets per inquiry.
-            key={editing.inquiry?.id ?? "new"}
-            inquiry={editing.inquiry}
+          <BuyRequestForm
+            // Remount on target change so form state resets per buy request.
+            key={editing.buyRequest?.id ?? "new"}
+            buyRequest={editing.buyRequest}
             onSave={handleSave}
             onCancel={closeDrawer}
             onDirty={() => setServerError("")}
