@@ -71,6 +71,7 @@ model CustomerInquiry {
   message        String?
   status         String   @default("new") // new, contacted, converted, closed
   source         String?  // marketing link ref
+  adminNotes     String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -90,6 +91,7 @@ model BuyRequest {
   images      String?  // JSON array of image URLs
   status      String   @default("new") // new, reviewing, accepted, declined
   source      String?
+  adminNotes  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
