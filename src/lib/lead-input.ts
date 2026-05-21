@@ -1,4 +1,5 @@
 import { couchStyles, couchColors, conditions } from "@/lib/config";
+import { num, str, bool } from "@/lib/input-coerce";
 
 export const validStyles: readonly string[] = couchStyles.map((s) => s.value);
 export const validColors: readonly string[] = couchColors;
@@ -8,18 +9,6 @@ export const validInquiryStatuses: readonly string[] = ["new", "contacted", "con
 export const validBuyRequestStatuses: readonly string[] = ["new", "reviewing", "accepted", "declined"];
 
 type RawBody = Record<string, unknown>;
-
-function num(value: unknown): number | null {
-  if (value === null || value === undefined || value === "") return null;
-  const n = typeof value === "number" ? value : parseFloat(String(value));
-  return Number.isFinite(n) ? n : null;
-}
-
-function str(value: unknown): string | null {
-  if (value === null || value === undefined) return null;
-  const s = String(value).trim();
-  return s.length ? s : null;
-}
 
 function makeSetter(body: RawBody, data: Record<string, unknown>, partial: boolean) {
   const has = (k: string) => Object.prototype.hasOwnProperty.call(body, k);
@@ -47,10 +36,10 @@ export function buildInquiryData(body: RawBody, { partial = false } = {}) {
   set("preferredStyle", str(body.preferredStyle));
   set("preferredColor", str(body.preferredColor));
   if (!partial || Object.prototype.hasOwnProperty.call(body, "hasSleeper")) {
-    set("hasSleeper", Boolean(body.hasSleeper));
+    set("hasSleeper", bool(body.hasSleeper));
   }
   if (!partial || Object.prototype.hasOwnProperty.call(body, "hasReclining")) {
-    set("hasReclining", Boolean(body.hasReclining));
+    set("hasReclining", bool(body.hasReclining));
   }
   set("budgetMin", num(body.budgetMin));
   set("budgetMax", num(body.budgetMax));
@@ -118,13 +107,14 @@ export function buildBuyRequestData(body: RawBody, { partial = false } = {}) {
   set("askingPrice", num(body.askingPrice));
   set("description", str(body.description));
   if (!partial || Object.prototype.hasOwnProperty.call(body, "images")) {
-    // images is stored as a JSON string column
+    // images is stored as a JSON string column. Accept an existing JSON string
+    // as-is, an array to be serialized, or null for anything else.
     if (typeof body.images === "string") {
       set("images", str(body.images));
-    } else if (body.images === null || body.images === undefined) {
-      set("images", null);
-    } else {
+    } else if (Array.isArray(body.images)) {
       set("images", JSON.stringify(body.images));
+    } else {
+      set("images", null);
     }
   }
   if (!partial || Object.prototype.hasOwnProperty.call(body, "status")) {

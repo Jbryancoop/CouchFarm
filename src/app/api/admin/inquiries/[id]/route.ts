@@ -13,6 +13,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const { status } = await request.json();
 
+  const validationError = validateInquiryData({ status });
+  if (validationError) {
+    return NextResponse.json({ error: validationError }, { status: 400 });
+  }
+
   const inquiry = await prisma.customerInquiry.update({
     where: { id },
     data: { status },

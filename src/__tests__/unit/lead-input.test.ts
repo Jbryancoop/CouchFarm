@@ -43,6 +43,23 @@ describe('buildInquiryData', () => {
     expect(data.hasReclining).toBe(false);
   });
 
+  it('treats the string "false" as false (not Boolean("false") === true)', () => {
+    const data = buildInquiryData({
+      name: 'Jane',
+      email: 'jane@example.com',
+      hasSleeper: 'false',
+      hasReclining: 'False',
+    });
+    expect(data.hasSleeper).toBe(false);
+    expect(data.hasReclining).toBe(false);
+  });
+
+  it('treats boolean true and "true" (any case) as true, "0" as false', () => {
+    expect(buildInquiryData({ hasSleeper: true }, { partial: true }).hasSleeper).toBe(true);
+    expect(buildInquiryData({ hasSleeper: 'TRUE' }, { partial: true }).hasSleeper).toBe(true);
+    expect(buildInquiryData({ hasSleeper: '0' }, { partial: true }).hasSleeper).toBe(false);
+  });
+
   it('partial mode keeps only present keys', () => {
     const data = buildInquiryData({ status: 'contacted' }, { partial: true });
     expect(Object.keys(data)).toEqual(['status']);

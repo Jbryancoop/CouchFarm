@@ -1,22 +1,11 @@
 import { couchStyles, couchColors } from "@/lib/config";
+import { num, str } from "@/lib/input-coerce";
 
 export const validStyles: readonly string[] = couchStyles.map((s) => s.value);
 export const validColors: readonly string[] = couchColors;
 export const validStatuses: readonly string[] = ["available", "pending", "sold"];
 
 type RawBody = Record<string, unknown>;
-
-function num(value: unknown): number | null {
-  if (value === null || value === undefined || value === "") return null;
-  const n = typeof value === "number" ? value : parseFloat(String(value));
-  return Number.isFinite(n) ? n : null;
-}
-
-function str(value: unknown): string | null {
-  if (value === null || value === undefined) return null;
-  const s = String(value).trim();
-  return s.length ? s : null;
-}
 
 /**
  * Maps an untrusted request body to the exact set of Couch columns we allow
