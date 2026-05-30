@@ -12,13 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npx tsc --noEmit
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run typecheck
 
   test:
     name: Tests
@@ -26,13 +28,15 @@ jobs:
     needs: typecheck
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npm run test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run test
 
   build:
     name: Build
@@ -43,14 +47,16 @@ jobs:
       NEXT_PUBLIC_SITE_URL: https://coloradocouchfarm.com
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx prisma generate
-      - run: npx prisma db push --skip-generate
-      - run: npm run build
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @couchfarm/web exec prisma db push --skip-generate
+      - run: pnpm turbo run build
 
   secret-scan:
     name: Secret Scan
@@ -66,11 +72,11 @@ jobs:
           # Check tracked files for hardcoded secrets (exclude .env.example, workflows, lockfiles)
           FOUND=$(git diff --cached --name-only 2>/dev/null || git diff HEAD~1 --name-only 2>/dev/null || echo "")
           if [ -z "$FOUND" ]; then
-            FOUND=$(find src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" \) | head -100)
+            FOUND=$(find apps packages -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" \) | head -200)
           fi
           LEAKED=0
           for f in $FOUND; do
-            if [ -f "$f" ] && echo "$f" | grep -qvE '(\.env\.example|node_modules|package-lock|\.github)'; then
+            if [ -f "$f" ] && echo "$f" | grep -qvE '(\.env\.example|node_modules|package-lock|pnpm-lock|\.github)'; then
               if grep -inE "$PATTERNS" "$f" | grep -ivE '(process\.env|import|require|interface|type |declare|\/\/|console\.log|\.md)' | head -5; then
                 echo "⚠️  Potential secret in: $f"
                 LEAKED=1
