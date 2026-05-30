@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { isBot, isValidEmail, throttlePublicForm } from "@/lib/form-guard";
+import { notifyNewInquiry } from "@/lib/email";
 
 export async function submitInquiry(formData: FormData) {
   try {
@@ -23,7 +24,7 @@ export async function submitInquiry(formData: FormData) {
       return { success: false, error: "Please enter a valid email address." };
     }
 
-    await prisma.customerInquiry.create({
+    const inquiry = await prisma.customerInquiry.create({
       data: {
         name,
         email,
@@ -47,6 +48,10 @@ export async function submitInquiry(formData: FormData) {
         data: { leads: { increment: 1 } },
       });
     }
+
+    // Email admins — never throws (logs internally), but await so the
+    // serverless function doesn't terminate before the send completes.
+    await notifyNewInquiry(inquiry);
 
     return { success: true };
   } catch {
