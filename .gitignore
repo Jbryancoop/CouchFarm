@@ -39,3 +39,4 @@ tsconfig.tsbuildinfo
 node_modules
 **/node_modules
 pnpm-debug.log*
+packages/*/dist

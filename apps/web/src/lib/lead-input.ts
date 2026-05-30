@@ -1,17 +1,23 @@
 import { couchStyles, couchColors, conditions } from "@/lib/config";
 import { num, str, bool } from "@/lib/input-coerce";
+import {
+  inquiryStatuses,
+  buyRequestStatuses,
+  type InquiryStatus,
+  type BuyRequestStatus,
+} from "@couchfarm/types";
 
 export const validStyles: readonly string[] = couchStyles.map((s) => s.value);
 export const validColors: readonly string[] = couchColors;
 export const validConditions: readonly string[] = conditions.map((c) => c.value);
 
-/** Canonical, ordered inquiry status list — single source of truth for UI + validation. */
-export const inquiryStatuses = ["new", "contacted", "converted", "closed"] as const;
-export type InquiryStatus = (typeof inquiryStatuses)[number];
-
-/** Canonical, ordered buy-request status list. */
-export const buyRequestStatuses = ["new", "reviewing", "accepted", "declined"] as const;
-export type BuyRequestStatus = (typeof buyRequestStatuses)[number];
+/**
+ * Canonical inquiry / buy-request status lists live in `@couchfarm/types` so
+ * the mobile app can share them. Re-exported here for backward compatibility
+ * with existing imports (`@/lib/lead-input`).
+ */
+export { inquiryStatuses, buyRequestStatuses };
+export type { InquiryStatus, BuyRequestStatus };
 
 export const validInquiryStatuses: readonly string[] = inquiryStatuses;
 export const validBuyRequestStatuses: readonly string[] = buyRequestStatuses;
