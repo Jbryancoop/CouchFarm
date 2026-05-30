@@ -33,3 +33,9 @@ coverage/
 *.log
 firebase-debug.log
 tsconfig.tsbuildinfo
+
+# Monorepo / pnpm
+.turbo
+node_modules
+**/node_modules
+pnpm-debug.log*
