@@ -4,14 +4,14 @@
 
 Build a greenfield **Expo SDK 54 / React Native** worker app in a **pnpm Turborepo** alongside the existing Next.js web app, shipping to **TestFlight + Google Play Internal Testing** via EAS Build/Submit/Update. Reuse the current Next.js REST API and `Session` table — add a single `POST /api/auth/mobile/login` that returns an opaque bearer token (stored in `expo-secure-store`), version mobile-facing endpoints under `/api/v1/*`, and add cursor pagination. Payments go through **Stripe Tap-to-Pay** (Terminal SDK on iPhone XS+ / NFC Android 11+) — the same Stripe account replaces the web "Demo Mode" checkout via Stripe Checkout, with one webhook updating `Sale.paid`. Push via **Expo Push Service** (free, multiplexes APNs + FCM) drives re-engagement on new inquiries, buy-requests, and sale receipts. UX is a 4-tab bottom-nav shell (Home / Inventory / Leads / More) with a camera-first add-couch flow and a sticky bottom action bar on detail screens.
 
-## 2. Open decisions for the owner
+## 2. Decisions log
 
-1. **Stripe or Square?** Recommend Stripe. **Override only if Petrali Roofing already processes through Square** — in that case consolidate on Square for a single 1099-K / payout / dashboard.
-2. **Merchant legal entity?** Colorado Couch Farm LLC (if it exists separately) or Petrali Roofing DBA. Determines which EIN goes on Stripe KYC and which bank receives payouts.
-3. **Apple Developer Program enrollment — in whose name?** Business entity (needs D-U-N-S, 1–3 days approval) or Jeff personally (faster, but app ownership tied to him). Same call for Google Play Console ($25 one-time).
-4. **Monorepo migration: green-light moving the existing Next.js repo into a Turborepo `apps/web` now**, or keep separate and accept type drift? Strong recommendation: monorepo. The Vercel project just needs Root Directory + build command updated; 30 minutes of risk on a preview deployment.
-5. **Worker device inventory:** confirm Brian's and Elijah's actual phones. Tap-to-Pay needs iPhone XS+ on iOS 16.7+, or NFC Android 11+ with Google Mobile Services. Older devices force a $49 Stripe Reader M2 fallback.
-6. **Can a `sales`-role user record sales + collect payment**, or admin-only? Recommendation: yes, sales can sell. Anything else neuters the app for the two people who'll use it most.
+1. ✅ **Payments: Stripe.** Tap-to-Pay via Stripe Terminal RN SDK; web Demo Mode replaced by Stripe Checkout against the same account.
+2. ⏳ **Merchant legal entity: TBD** (Colorado Couch Farm LLC vs Petrali Roofing DBA). Blocks Stripe KYC submission only. Foundation work can proceed without it.
+3. ✅ **Apple Developer + Expo + Fastlane: existing Radius Group infrastructure** (team `3FAZWN7F8L`, ASC API key at `/Users/jeff/Development/FastLane/AuthKey_G228482V89.p8`, fastlane + spaceship MCPs in place). No new Apple Dev enrollment needed. Bundle ID + Tap-to-Pay entitlement still need to be registered under this team. **Google Play Console + Firebase: status TBD** — if Radius doesn't already have it, $25 one-time + Firebase project setup applies.
+4. ✅ **Monorepo migration: green-lit.** Move existing Next.js to `apps/web` in a pnpm Turborepo; add `apps/mobile` + shared packages alongside.
+5. ✅ **Worker devices: good to go** for Tap-to-Pay on phone (no Stripe Reader M2 fallback needed).
+6. ✅ **Sales role can record sales + collect payment.** Only Team management stays admin-only.
 
 ## 3. Architecture at a glance
 
@@ -44,14 +44,14 @@ Skip JWT, skip OAuth PKCE, skip Accept-Version headers. Opaque tokens + URL vers
 
 Use **Expo Push Service** (free, one server SDK call fans out to APNs + FCM). Owner has to provision the upstream credentials regardless — Expo just multiplexes.
 
-**Owner action items (start day one — Apple approval is the critical path):**
+**Owner action items (Apple infra already in place via Radius Group — Tap-to-Pay entitlement is the critical path):**
 
-1. **Apple Developer Program** — enroll the business entity at developer.apple.com ($99/yr, needs D-U-N-S for org; 1–2 day approval).
-2. **Register bundle ID** — suggest `us.coloradocouchfarm.workers`, enable Push Notifications capability, request the **Tap to Pay on iPhone entitlement** the same day (separate Apple approval, can take days).
-3. **APNs auth key** — Certificates, IDs & Profiles → Keys → "+", enable APNs, download the `.p8` (one-time download). Stash in `~/secure/`, back up to 1Password. Capture Key ID + Team ID.
-4. **Google Play Console** — $25 one-time, register the org developer account, create the app listing under package name `us.coloradocouchfarm.workers`.
-5. **Firebase project** — create project, add Android app with the package name, download `google-services.json`. Then Project Settings → Service Accounts → Generate new private key → download the FCM service account JSON. Store at `~/secure/google-play-service-account.json` (chmod 600).
-6. **Upload to Expo** — `eas credentials` walks through uploading the `.p8` (with Key ID/Team ID) and the FCM JSON.
+1. ✅ **Apple Developer Program** — Radius Group account in use (team `3FAZWN7F8L`).
+2. **Register bundle ID** under team `3FAZWN7F8L` — suggest `us.coloradocouchfarm.workers` (or whatever fits Radius's convention), enable **Push Notifications** capability, and request the **Tap to Pay on iPhone entitlement** the same day. The entitlement is a separate Apple approval and is the slowest single dependency in the project.
+3. **APNs auth key** — if Radius already has a universal `.p8` you want to reuse, capture Key ID + Team ID for `eas credentials`. Otherwise generate one at Certificates, IDs & Profiles → Keys → "+", download (one-time), stash in `~/secure/`.
+4. **Google Play Console** — confirm whether Radius has an existing org account. If yes, register the new package under it. If no, $25 one-time + create the app listing under package `us.coloradocouchfarm.workers`.
+5. **Firebase project** — same question: existing Radius project we can reuse, or stand up a new one? If new: create project → add Android app with the package name → download `google-services.json` → Project Settings → Service Accounts → Generate new private key → download FCM service account JSON → store at `~/secure/google-play-service-account.json` (chmod 600).
+6. **Upload to Expo** — `eas credentials` walks through uploading the `.p8` (with Key ID/Team ID) and the FCM JSON. Reuse Radius's existing Expo organization.
 
 **Server work this triggers:**
 
