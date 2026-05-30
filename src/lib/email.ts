@@ -1,9 +1,12 @@
 import { Resend } from "resend";
 import { prisma } from "./db";
 
+// Sends from the dedicated send-subdomain that's verified in Resend (DKIM/SPF
+// live at email.coloradocouchfarm.com). Override via EMAIL_FROM if you ever
+// switch to the apex domain.
 const FROM =
   process.env.EMAIL_FROM ||
-  "Colorado Couch Farm <notifications@coloradocouchfarm.com>";
+  "Colorado Couch Farm <notifications@email.coloradocouchfarm.com>";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://coloradocouchfarm.com";
 
 let _resend: Resend | null = null;
