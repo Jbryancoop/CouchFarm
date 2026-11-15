@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git add next-env.d.ts next.config.ts package.json prisma/schema.prisma prisma/migrations/20260220160704_add_session_model/ src/app/about/page.tsx src/app/admin/layout.tsx src/app/globals.css src/app/inquiry/InquiryForm.tsx src/app/inquiry/page.tsx src/app/inventory/[id]/page.tsx src/app/inventory/page.tsx src/app/page.tsx src/app/sell/SellForm.tsx src/app/sell/page.tsx src/app/checkout/ src/app/policies/ src/components/CouchCard.tsx src/components/Footer.tsx src/components/Header.tsx src/components/Logo.tsx src/lib/auth.ts src/lib/config.ts src/middleware.ts)",
+      "Bash(git commit:*)",
+      "Bash(gh auth status)"
+    ]
+  }
+}
